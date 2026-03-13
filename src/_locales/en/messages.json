@@ -11,6 +11,7 @@
   "selectAiModel": { "message": "Select an AI Model" },
   "langEnglish": { "message": "EN" },
   "langJapanese": { "message": "日本語" },
+  "langSpanish": { "message": "Español" },
   "chatInputPlaceholder": { "message": "Describe your extension, ask a question, or type a message..." },
   "attachImageButtonLabel": { "message": "Attach Image" },
   "sendMessageButtonLabel": { "message": "Send Message" },
