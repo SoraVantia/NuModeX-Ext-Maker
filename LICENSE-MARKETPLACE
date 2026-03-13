@@ -1,0 +1,87 @@
+MARKETPLACE PUBLICATION LICENSE
+Version 1.0, March 2026
+
+Copyright 2026 SoraVantia GK. All rights reserved.
+
+ADDITIONAL TERMS FOR BROWSER EXTENSION MARKETPLACE PUBLICATION
+
+This license applies IN ADDITION TO the Apache License 2.0 (the "Base
+License") included in the LICENSE file. The Base License governs all use,
+modification, and distribution of this software EXCEPT as restricted below.
+
+1. MARKETPLACE RESTRICTION
+
+   The grant of rights under the Base License does NOT include, and the
+   Base License does not grant to You, the right to publish, upload,
+   submit, or distribute this software or any Derivative Works thereof
+   to any browser extension or add-on marketplace, store, or distribution
+   platform, including but not limited to:
+
+   (a) Google Chrome Web Store (chrome.google.com/webstore)
+   (b) Mozilla Firefox Add-ons (addons.mozilla.org)
+   (c) Microsoft Edge Add-ons (microsoftedge.microsoft.com/addons)
+   (d) Apple Safari Extensions Gallery
+   (e) Opera Add-ons (addons.opera.com)
+   (f) Any other current or future browser extension marketplace or
+       distribution platform of similar nature
+
+   This restriction applies to the software in its entirety, in
+   modified form, or as part of a product or service whose value
+   derives substantially from the functionality of this software.
+
+2. OBTAINING A MARKETPLACE LICENSE
+
+   If You wish to publish this software or any Derivative Works to any
+   browser extension marketplace listed above or of similar nature, You
+   must obtain prior written permission from SoraVantia GK.
+
+   To request a Marketplace License, contact:
+   Email: numodex@soravantia.com
+
+3. PERMITTED USES UNDER THE BASE LICENSE
+
+   For the avoidance of doubt, the following uses remain fully permitted
+   under the Base License and are NOT restricted by this Marketplace
+   Publication License:
+
+   (a) Using the software for any personal or commercial purpose
+   (b) Modifying the software and creating derivative works
+   (c) Distributing the software or derivative works through any channel
+       OTHER than the browser extension marketplaces listed above
+   (d) Studying, learning from, and referencing the source code
+   (e) Integrating portions of the source code into other projects that
+       are not browser extensions published to the above marketplaces
+   (f) Self-hosting, sideloading, or distributing the extension directly
+       to users outside of the above marketplaces (e.g., enterprise
+       deployment via group policy, direct .crx/.xpi distribution)
+   (g) Contributing to the original project
+
+4. TRADEMARKS
+
+   "NuModeX," "NuModeX Ext Maker," and the NuModeX logo are trademarks
+   of SoraVantia GK. This license does not grant permission to use these
+   trademarks. If You distribute a modified version of this software
+   through permitted channels, You must use a different name and branding.
+
+5. NO WARRANTY
+
+   THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+   SORAVANTIA GK DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+   PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+6. GOVERNING LAW
+
+   This license shall be governed by the laws of Japan. Any disputes
+   arising from this license shall be resolved in the courts of Tokyo,
+   Japan.
+
+7. SEVERABILITY
+
+   If any provision of this Marketplace Publication License is found to
+   be unenforceable, the remaining provisions and the Base License shall
+   continue in full force and effect.
+
+For questions about this license, contact:
+SoraVantia GK
+Email: numodex@soravantia.com
