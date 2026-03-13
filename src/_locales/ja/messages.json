@@ -80,5 +80,8 @@
   "createFileButton": { "message": "ファイル作成" },
   "editAppliedSuccess": { "message": "編集が正常に適用されました！" },
   "undoSuccess": { "message": "元に戻しました — 前の状態に復元されました。" },
-  "noChanges": { "message": "変更はありませんでした。" }
+  "noChanges": { "message": "変更はありませんでした。" },
+  "onDeviceNotAvailable": { "message": "オンデバイスAIはこのブラウザでは利用できません。" },
+  "onDeviceDownloading": { "message": "オンデバイスAIモデルをダウンロード中。数分かかる場合があります..." },
+  "onDeviceBuildDisabled": { "message": "オンデバイスモデルはチャットと編集のみ対応しています。拡張機能を構築するにはクラウドモデルを選択してください。" }
 }
