@@ -11,6 +11,7 @@
   "selectAiModel": { "message": "AIモデルを選択" },
   "langEnglish": { "message": "EN" },
   "langJapanese": { "message": "日本語" },
+  "langSpanish": { "message": "Español" },
   "chatInputPlaceholder": { "message": "拡張機能を説明するか、質問するか、メッセージを入力してください..." },
   "attachImageButtonLabel": { "message": "画像を添付" },
   "sendMessageButtonLabel": { "message": "メッセージを送信" },
