@@ -46,6 +46,9 @@ db.version(1).stores({
 //   updatedAt: Date
 // }
 
+// Browser detection for on-device model filtering
+const isEdgeBrowser = navigator.userAgent.includes('Edg');
+
 // EULA Management State
 let eulaCache = new Map(); // Cache loaded EULA content by language code
 let eulaAcceptanceStatus = null; // Cache EULA acceptance status
@@ -221,8 +224,35 @@ const AI_MODELS = [
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-haiku-4-5-20251001'
+    },
+    // --- On-device Models ---
+    {
+        id: 'gemini-nano',
+        name: 'Gemini Nano (On-device)',
+        provider: 'on-device',
+        browserOnly: 'chrome',
+        onDeviceOnly: true,
+        supportsTemperature: true
+    },
+    {
+        id: 'phi-4-mini',
+        name: 'Phi-4 Mini (On-device)',
+        provider: 'on-device',
+        browserOnly: 'edge',
+        onDeviceOnly: true,
+        supportsTemperature: true
     }
 ];
+
+// Filter models available for the current browser
+function getAvailableModels() {
+    return AI_MODELS.filter(model => {
+        if (!model.browserOnly) return true;
+        if (model.browserOnly === 'chrome' && !isEdgeBrowser) return true;
+        if (model.browserOnly === 'edge' && isEdgeBrowser) return true;
+        return false;
+    });
+}
 
 // ---- I18N START ----
 let currentLang = 'en'; // Stores the currently active language code (e.g., 'en', 'ja')
@@ -319,7 +349,8 @@ function getTranslatedMessage(key, substitutions) {
 }
 
 function updateButtonStates() {
-    const hasApiKey = !!apiKey;
+    const isOnDeviceModel = selectedModel && selectedModel.provider === 'on-device';
+    const hasApiKey = !!apiKey || isOnDeviceModel;
     const hasModel = !!selectedModel;
     const hasTextInInput = domElements.chatInputField ? domElements.chatInputField.value.trim() !== '' : false;
     const hasAttachedFiles = attachedFilesData.length > 0;
@@ -327,7 +358,10 @@ function updateButtonStates() {
     const hasConversationHistory = conversationHistory.length > 0;
 
     if(domElements.sendMessageButton) domElements.sendMessageButton.disabled = !hasApiKey || !hasModel || !canSendMessage;
-    if(domElements.generateExtensionButton) domElements.generateExtensionButton.disabled = !hasConversationHistory && !canSendMessage;
+    if(domElements.generateExtensionButton) {
+        const isOnDevice = selectedModel && selectedModel.onDeviceOnly;
+        domElements.generateExtensionButton.disabled = isOnDevice || (!hasConversationHistory && !canSendMessage);
+    }
     if(domElements.downloadZipButton) domElements.downloadZipButton.disabled = generatedFiles.length === 0;
     if(domElements.attachImageButton) domElements.attachImageButton.disabled = !hasApiKey || !hasModel;
 
@@ -1074,14 +1108,15 @@ function loadSelectedModel() {
             return;
         }
         if (result.selectedAiModel) {
-            const model = AI_MODELS.find(m => m.id === result.selectedAiModel);
+            const availableModels = getAvailableModels();
+            const model = availableModels.find(m => m.id === result.selectedAiModel);
             if (model) {
                 selectModel(model);
                 console.log("loadSelectedModel: Model loaded from storage:", model.name);
             } else {
                 console.warn("loadSelectedModel: Saved model '" + result.selectedAiModel + "' not found. Falling back to default.");
-                if (AI_MODELS.length > 0) {
-                    selectModel(AI_MODELS[0]);
+                if (availableModels.length > 0) {
+                    selectModel(availableModels[0]);
                 }
             }
         }
@@ -1091,11 +1126,22 @@ function loadSelectedModel() {
 function selectModel(model) {
     selectedModel = model;
     chrome.storage.local.set({ selectedAiModel: model.id });
-    
+
     // Update UI
     if (domElements.modelSearchInput) {
         domElements.modelSearchInput.value = model.name;
     }
+
+    // Disable/enable Build Extension button for on-device models
+    if (domElements.generateExtensionButton) {
+        if (model.onDeviceOnly) {
+            domElements.generateExtensionButton.disabled = true;
+            domElements.generateExtensionButton.title = getTranslatedMessage('onDeviceBuildDisabled') || 'On-device models can only be used for chat and editing. Select a cloud model to build extensions.';
+        } else {
+            domElements.generateExtensionButton.title = '';
+        }
+    }
+
     updateButtonStates();
 }
 
@@ -1125,7 +1171,7 @@ function setupCombobox() {
         domElements.modelDropdown.innerHTML = '';
         currentHighlight = -1;
 
-        const filteredModels = AI_MODELS.filter(model => 
+        const filteredModels = getAvailableModels().filter(model =>
             model.name.toLowerCase().includes(filter.toLowerCase())
         );
 
@@ -1221,7 +1267,7 @@ function setupCombobox() {
                 e.preventDefault();
                 if (currentHighlight >= 0 && options[currentHighlight]) {
                     const modelId = options[currentHighlight].dataset.modelId;
-                    const model = AI_MODELS.find(m => m.id === modelId);
+                    const model = getAvailableModels().find(m => m.id === modelId);
                     if (model) {
                         selectModel(model);
                         closeDropdown();
@@ -1355,7 +1401,7 @@ function handleSendMessage() {
     const text = domElements.chatInputField.value.trim();
     if (!text && attachedFilesData.length === 0) return;
 
-    if (!apiKey) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
         updateStatus('errorApiKeyMissing', 'error');
         toggleApiKeySection(); // Show API key modal
         return;
@@ -1393,8 +1439,8 @@ async function handleGenerateExtension() {
     }
 
     try {
-        // STEP 1: Check API key
-        if (!apiKey) {
+        // STEP 1: Check API key (not needed for on-device models)
+        if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
             updateStatus('errorApiKeyMissing', 'error');
             toggleApiKeySection();
             return;
@@ -1403,6 +1449,12 @@ async function handleGenerateExtension() {
         // STEP 2: Check AI model selection
         if (!selectedModel) {
             updateStatus('Please select an AI model', 'error');
+            return;
+        }
+
+        // STEP 2.5: Block generation for on-device models
+        if (selectedModel.onDeviceOnly) {
+            updateStatus(getTranslatedMessage('onDeviceBuildDisabled') || 'On-device models can only be used for chat and editing. Select a cloud model to build extensions.', 'error');
             return;
         }
 
@@ -1628,7 +1680,7 @@ function addMessageToChatDOM(sender, text, images = []) {
 
 // --- API Interaction ---
 async function callAPI(isGenerationRequest, systemPromptOverride = null) {
-    if (!apiKey) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
         updateStatus('errorApiKeyMissing', 'error');
         toggleApiKeySection();
         return;
@@ -1651,6 +1703,16 @@ async function callAPI(isGenerationRequest, systemPromptOverride = null) {
             response = await callOpenAIAPI(isGenerationRequest, systemPromptOverride);
         } else if (selectedModel.provider === 'anthropic') {
             response = await callClaudeAPI(isGenerationRequest, systemPromptOverride);
+        } else if (selectedModel.provider === 'on-device') {
+            // Build a single prompt string from conversation history for on-device models
+            const chatPrompt = conversationHistory.map(msg => {
+                const role = msg.role === 'user' ? 'User' : 'Assistant';
+                const text = msg.parts.filter(p => p.text).map(p => p.text).join('\n');
+                return `${role}: ${text}`;
+            }).join('\n\n');
+            const sysPrompt = systemPromptOverride || 'You are a helpful AI assistant.';
+            const resultText = await callOnDeviceAPI(chatPrompt, sysPrompt, false);
+            response = { text: resultText };
         } else {
             throw new Error(`Unknown provider: ${selectedModel.provider}`);
         }
@@ -1885,6 +1947,70 @@ async function callClaudeAPI(isGenerationRequest, systemPromptOverride = null) {
     return { error: 'No valid response from Claude API' };
 }
 
+// --- On-device AI (LanguageModel API) ---
+async function callOnDeviceAPI(prompt, systemPrompt, isEdit = false) {
+    // Check if LanguageModel API is available
+    if (typeof LanguageModel === 'undefined') {
+        throw new Error(getTranslatedMessage('onDeviceNotAvailable') || 'On-device AI is not available in this browser. Please enable it in browser flags or use a cloud model.');
+    }
+
+    // Determine output language based on current locale
+    const currentUiLang = chrome.i18n.getUILanguage().split('-')[0];
+    const supportedLangs = ['en', 'es', 'ja'];
+    const outputLang = supportedLangs.includes(currentUiLang) ? currentUiLang : 'en';
+
+    // Check availability with language options
+    let availabilityOptions = {};
+    try {
+        availabilityOptions = {
+            expectedInputs: [{ type: 'text', languages: [outputLang] }],
+            expectedOutputs: [{ type: 'text', languages: [outputLang] }]
+        };
+        const availability = await LanguageModel.availability(availabilityOptions);
+        if (availability === 'unavailable') {
+            throw new Error('On-device AI model is not available on this device. Hardware requirements: 22GB free disk space, 4GB+ VRAM or 16GB+ RAM.');
+        }
+        if (availability === 'downloadable' || availability === 'downloading') {
+            addMessageToChatDOM('system', getTranslatedMessage('onDeviceDownloading') || 'The on-device AI model is being downloaded. This may take a few minutes. Please wait...');
+        }
+    } catch (e) {
+        if (e.message.includes('On-device AI model is not available')) throw e;
+        // Edge may not support expectedInputs/expectedOutputs yet — try without them
+        const availability = await LanguageModel.availability();
+        if (availability === 'unavailable') {
+            throw new Error(getTranslatedMessage('onDeviceNotAvailable') || 'On-device AI model is not available on this device.');
+        }
+    }
+
+    // Create session
+    let sessionOptions = {
+        initialPrompts: [
+            { role: 'system', content: systemPrompt }
+        ],
+        monitor(m) {
+            m.addEventListener('downloadprogress', (e) => {
+                console.log(`Model download: ${Math.round(e.loaded * 100)}%`);
+            });
+        }
+    };
+
+    // Try to set expected outputs (Chrome requires this, Edge may not)
+    try {
+        sessionOptions.expectedInputs = [{ type: 'text', languages: [outputLang] }];
+        sessionOptions.expectedOutputs = [{ type: 'text', languages: [outputLang] }];
+    } catch (e) {
+        // Silently fall back without language options
+    }
+
+    const session = await LanguageModel.create(sessionOptions);
+    try {
+        const result = await session.prompt(prompt);
+        return result;
+    } finally {
+        session.destroy();
+    }
+}
+
 // --- IndexedDB Project Persistence ---
 async function saveProjectToDb() {
     const now = new Date();
@@ -1975,7 +2101,7 @@ function buildSelectiveContext(targetFileName) {
 
 // --- Incremental Edit API Call ---
 async function callEditAPI(targetFileName, userRequest) {
-    if (!apiKey) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
         updateStatus('errorApiKeyMissing', 'error');
         return;
     }
@@ -2023,6 +2149,16 @@ async function callEditAPI(targetFileName, userRequest) {
             case 'anthropic':
                 result = await callClaudeAPI(true, systemPrompt);
                 break;
+            case 'on-device': {
+                const editPrompt = conversationHistory.map(msg => {
+                    const role = msg.role === 'user' ? 'User' : 'Assistant';
+                    const text = msg.parts.filter(p => p.text).map(p => p.text).join('\n');
+                    return `${role}: ${text}`;
+                }).join('\n\n');
+                const resultText = await callOnDeviceAPI(editPrompt, systemPrompt, true);
+                result = { text: resultText };
+                break;
+            }
             default:
                 result = { error: 'Unknown provider' };
         }
