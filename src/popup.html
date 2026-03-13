@@ -1,0 +1,296 @@
+<!--
+  Copyright 2026 SoraVantia GK. All rights reserved.
+  Dual-licensed under the Apache License 2.0 and the Marketplace Publication License.
+  See LICENSE and LICENSE-MARKETPLACE for details.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuModeX Ext Maker</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="libs/diff2html.min.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Main App -->
+        <div id="main-app">
+            <header id="global-header">
+                <div id="app-title-container">
+                    <img src="icons/icon128.png" alt="App Icon" id="header-app-icon">
+                    <h1 id="app-title"><span class="brand-name"><span class="brand-gradient">N</span><span class="brand-gray">u</span><span class="brand-gradient">M</span><span class="brand-gray">ode</span><span class="brand-gradient">X</span><span class="brand-gray"> Ext Maker</span></span></h1>
+                </div>
+                <div id="controls">
+                    <!-- AI Model Selection Combobox -->
+                    <div id="model-selection-container">
+                        <div class="combobox-container">
+                            <input type="text" 
+                                   id="model-search-input" 
+                                   class="combobox-input" 
+                                   placeholder="Select an AI Model" 
+                                   data-i18n-placeholder="selectAiModel"
+                                   autocomplete="off"
+                                   role="combobox"
+                                   aria-expanded="false"
+                                   aria-controls="model-dropdown"
+                                   aria-autocomplete="list">
+                            <button id="model-dropdown-toggle" class="dropdown-toggle" aria-label="Toggle dropdown">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M7 10l5 5 5-5z"/>
+                                </svg>
+                            </button>
+                            <div id="model-dropdown" class="dropdown-menu" role="listbox" aria-label="AI Models">
+                                <!-- Options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <select id="language-switcher">
+                        <option value="en" data-i18n="langEnglish">EN</option>
+                        <option value="ja" data-i18n="langJapanese">日本語</option>
+                    </select>
+                    <!-- Dark Mode Toggle Button -->
+                    <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" class="sun-icon">
+                            <path d="M12 17.5q-2.3 0-3.9-1.6T6.5 12q0-2.3 1.6-3.9T12 6.5q2.3 0 3.9 1.6T17.5 12q0 2.3-1.6 3.9T12 17.5ZM12 16q1.45 0 2.475-1.025T15.5 12.5q0-1.45-1.025-2.475T12 9q-1.45 0-2.475 1.025T8.5 12q0 1.45 1.025 2.475T12 16Zm0-4Zm0 7q-.4 0-.775-.15T10.6 18.4l-1.45-1.45q-.275-.275-.425-.65T8.575 15.5H6.5q-.625 0-1.062-.438T5 14V10q0-.625.438-1.062T6.5 8.5h2.075q0-.425.15-.8t.425-.65L10.6 5.6q.275-.275.625-.425T12 5q.4 0 .775.15t.625.425l1.45 1.45q.275.275.425.65t.15.8H17.5q.625 0 1.062.438T19 10v4q0 .625-.438 1.062T17.5 15.5h-2.075q0 .425-.15.8t-.425.65l-1.45 1.45q-.25.25-.625.425T12 19Z"/>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" class="moon-icon" style="display: none;">
+                            <path d="M12 21q-3.75 0-6.375-2.625T3 12q0-3.75 2.625-6.375T12 3q.2 0 .425.013t.575.062q-.9.8-1.4 1.975t-.5 2.45q0 2.25 1.575 3.825T16.5 12.9q1.275 0 2.45-.5t1.975-1.4q.05.35.063.575T21 12q0 3.75-2.625 6.375T12 21Z"/>
+                        </svg>
+                    </button>
+                    <button id="help-button" aria-label="Help Guide" data-i18n-aria="helpButtonLabel" title="Help Guide">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                        </svg>
+                    </button>
+                    <button id="settings-button" aria-label="Settings" data-i18n-aria="settingsLabel">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.25 C14.34,2.09,14.19,2,14,2h-4c-0.19,0-0.34,0.09-0.4,0.25l-0.33,2.52c-0.59,0.24-1.12,0.56-1.62,0.94l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.27c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.8,11.06,4.78,11.37,4.78,11.69 c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22 l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.33,2.52c0.06,0.16,0.21,0.25,0.4,0.25h4c0.19,0,0.34-0.09,0.4-0.25l0.33-2.52 c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61 L19.14,12.94z M12,15.6c-1.98,0-3.6-1.61-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.61,3.6,3.6S13.98,15.6,12,15.6z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div id="main-content-area">
+                <div id="left-pane">
+                    <div id="conversation-display-area">
+                        <!-- Messages will be appended here -->
+                    </div>
+                    <div id="image-preview-area"></div>
+                    <div id="input-area">
+                        <button id="attach-image-button" aria-label="Attach Image" data-i18n-aria="attachImageButtonLabel">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                               <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5S13.5 3.62 13.5 5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v11.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                            </svg>
+                        </button>
+                        <input type="file" id="image-input-field" accept="image/*" multiple style="display: none;">
+                        <textarea id="chat-input-field" data-i18n-placeholder="chatInputPlaceholder" placeholder="Describe your extension, ask a question, or type a message..."></textarea>
+                        <button id="send-message-button" aria-label="Send Message" data-i18n-aria="sendMessageButtonLabel">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="primary-action-area">
+                        <button id="generate-extension-button">
+                            <img src="icons/icon128.png" alt="Build Icon" class="button-icon">
+                            <span data-i18n="generateButton">Build Extension</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="right-pane">
+                    <div id="output-pane-header">
+                        <span data-i18n="generatedFilesLabel">Generated Files</span>
+                        <div id="file-action-buttons">
+                            <button id="improve-extension-button" title="Improve the entire extension with AI" data-i18n="improveExtensionButton" disabled>
+                                🚀 Improve Extension
+                            </button>
+                            <button id="edit-file-button" title="Edit selected file with AI" data-i18n="editFileButton" disabled>
+                                ✏️ Edit File
+                            </button>
+                            <div class="more-actions-wrapper">
+                                <button id="more-actions-button" title="More actions" data-i18n="moreActionsButton">
+                                    ▾ More
+                                </button>
+                                <div id="more-actions-dropdown" class="more-actions-dropdown">
+                                    <button id="add-file-button" class="dropdown-option" title="Add a new file with AI" data-i18n="addFileButton" disabled>
+                                        ➕ Add File
+                                    </button>
+                                    <button id="undo-button" class="dropdown-option" title="Undo last edit" data-i18n="undoButton" disabled>
+                                        ↩️ Undo
+                                    </button>
+                                    <button id="view-changes-button" class="dropdown-option" title="View diff of last AI edit" data-i18n="viewChangesButton" disabled>
+                                        🔍 View Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="improve-prompt-area" style="display: none;">
+                        <p class="improve-prompt-label">Describe what you want to improve, add, or change across the entire extension:</p>
+                        <textarea id="improve-prompt-input" placeholder="e.g., Add dark mode support, improve the popup UI, add a settings page, fix the content script to work on all sites..." rows="3"></textarea>
+                        <div id="improve-prompt-actions">
+                            <button id="apply-improve-button">🚀 Apply Changes</button>
+                            <button id="cancel-improve-button">Cancel</button>
+                        </div>
+                    </div>
+                    <div id="file-tree-view">
+                        <!-- File tree will be populated here -->
+                        <p id="output-pane-placeholder" class="placeholder-text" data-i18n="outputPanePlaceholder">Start a conversation on the left to describe the extension you want to build. Generated files will appear here.</p>
+                    </div>
+                    <div id="edit-prompt-area" style="display: none;">
+                        <textarea id="edit-prompt-input" placeholder="Describe the changes you want to make to this file..." rows="3"></textarea>
+                        <div id="edit-prompt-actions">
+                            <button id="apply-edit-button">Apply Edit</button>
+                            <button id="cancel-edit-button">Cancel</button>
+                        </div>
+                    </div>
+                    <div id="add-file-area" style="display: none;">
+                        <input type="text" id="new-file-name-input" placeholder="Filename (e.g., utils.js, styles/extra.css)">
+                        <textarea id="add-file-prompt-input" placeholder="Describe what this file should contain..." rows="3"></textarea>
+                        <div id="add-file-actions">
+                            <button id="create-file-button">Create File</button>
+                            <button id="cancel-add-file-button">Cancel</button>
+                        </div>
+                    </div>
+                    <div id="code-viewer-container">
+                        <button id="toggle-edit-mode" class="edit-mode-toggle" title="Toggle manual editing" style="display: none;">
+                            📝 Edit
+                        </button>
+                        <pre><code id="code-viewer" class="language-javascript"></code></pre>
+                        <p id="code-viewer-placeholder" class="placeholder-text" data-i18n="codeViewerPlaceholder">Select a file to view its content.</p>
+                    </div>
+                    <div id="output-actions">
+                        <button id="download-zip-button" data-i18n="downloadZipButton" disabled>Download All as ZIP</button>
+                        <button id="start-over-button" data-i18n="startOverButton">Start Over</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="api-key-section" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button" id="close-api-modal">×</span>
+                    <h2 data-i18n="apiKeySectionTitle">API Key Configuration</h2>
+                    <label for="api-key-input" data-i18n="apiKeyLabel">API Key:</label>
+                    <input type="password" id="api-key-input">
+                    <button id="save-api-key-button" data-i18n="saveApiKeyButton">Save Key</button>
+                    <p id="api-key-status" class="status-message"></p>
+                    <p class="api-key-hint">Your API key is stored locally in your browser  delete or deactivate it when not in use, and never share your device or browser profile.</p>
+                </div>
+            </div>
+
+            <!-- EULA Modal -->
+            <div id="eula-modal" class="modal" style="display: none;">
+                <div class="modal-content eula-modal-content">
+                    <h2 id="eula-title">Terms of Service & End User License Agreement</h2>
+                    <div id="eula-language-selector">
+                        <label for="eula-language">Language:</label>
+                        <select id="eula-language">
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
+                    <div id="eula-content" class="eula-content"></div>
+                    <div id="eula-version-info" class="eula-version"></div>
+                    <div class="eula-actions">
+                        <label class="eula-checkbox-label">
+                            <input type="checkbox" id="eula-accept-checkbox">
+                            I have read and agree to the Terms of Service
+                        </label>
+                        <div class="eula-buttons">
+                            <button id="eula-accept-button" disabled>Accept</button>
+                            <button id="eula-decline-button">Decline</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Guide Modal -->
+            <div id="help-modal" class="modal" style="display: none;">
+                <div class="modal-content help-modal-content">
+                    <span class="close-button" id="close-help-modal">×</span>
+                    <h2 data-i18n="helpModalTitle">🚀 How to Use <span class="brand-name"><span class="brand-gradient">N</span><span class="brand-gray">u</span><span class="brand-gradient">M</span><span class="brand-gray">ode</span><span class="brand-gradient">X</span><span class="brand-gray"> Ext Maker</span></span></h2>
+                    
+                    <div class="help-steps-list">
+                        <div class="help-step">
+                            <strong data-i18n="helpStep1Title">Step 1: Get API Key</strong>
+                            <p data-i18n="helpStep1Text">Click Settings (⚙️) → Get API key from the cloud provider → Paste and "Save Key"</p>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep2Title">Step 2: Select AI Model</strong>
+                            <p data-i18n="helpStep2Text">Choose a model from the dropdown menu</p>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep3Title">Step 3: Accept Terms</strong>
+                            <p data-i18n="helpStep3Text">Read and accept the Terms of Service</p>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep4Title">Step 4: Describe Extension</strong>
+                            <p data-i18n="helpStep4Text">Type what you want to build in the chat</p>
+                            <small data-i18n="helpStep4Example">Example: "Create a password generator extension"</small>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep5Title">Step 5: Build Extension</strong>
+                            <p data-i18n="helpStep5Text">Click "Build Extension" button and wait</p>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep6Title">Step 6: Download Files</strong>
+                            <p data-i18n="helpStep6Text">Click "Download All as ZIP"</p>
+                        </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpStep7Title">Step 7: Install in Chrome</strong>
+                            <p data-i18n="helpStep7Text">Extract ZIP → Chrome Extensions → Developer mode ON → "Load unpacked"</p>
+                        </div>
+
+                        <div class="help-done">
+                            <strong data-i18n="helpDone">Done! Your extension is now installed.</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="help-footer">
+                        <button id="help-close-button" class="help-close-btn" data-i18n="helpCloseButton">Got It!</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diff View Modal -->
+            <div id="diff-modal" class="modal" style="display: none;">
+                <div class="modal-content diff-modal-content">
+                    <div id="diff-modal-header">
+                        <h2 id="diff-modal-title">Changes</h2>
+                        <div id="diff-controls">
+                            <button id="diff-toggle-view" class="diff-control-btn" title="Toggle view mode">Side-by-side</button>
+                            <span class="close-button" id="close-diff-modal">&times;</span>
+                        </div>
+                    </div>
+                    <div id="diff-file-tabs"></div>
+                    <div id="diff-container"></div>
+                </div>
+            </div>
+
+            <div id="status-bar">
+                <span id="footer-legal-links">
+                    <span id="privacy-policy-link" class="footer-link" data-i18n="privacyPolicyLink">Privacy Policy</span>
+                    <span id="terms-of-service-link" class="footer-link" data-i18n="termsOfServiceLink">Terms of Service</span>
+                </span>
+                <span id="loading-indicator" style="display: none;"></span>
+                <span id="status-message-area"></span>
+                <span id="copyright-notice" data-i18n="copyrightNotice">Copyright © 2026 SoraVantia GK. All rights reserved.</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="libs/jszip.min.js"></script>
+    <script src="libs/dexie.min.js"></script>
+    <script src="libs/diff.min.js"></script>
+    <script src="libs/diff2html.min.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
