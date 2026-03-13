@@ -80,5 +80,8 @@
   "createFileButton": { "message": "Create File" },
   "editAppliedSuccess": { "message": "Edit applied successfully!" },
   "undoSuccess": { "message": "Undo successful — reverted to previous state." },
-  "noChanges": { "message": "No changes were made." }
+  "noChanges": { "message": "No changes were made." },
+  "onDeviceNotAvailable": { "message": "On-device AI is not available in this browser." },
+  "onDeviceDownloading": { "message": "Downloading on-device AI model. This may take a few minutes..." },
+  "onDeviceBuildDisabled": { "message": "On-device models can only be used for chat and editing. Select a cloud model to build extensions." }
 }
