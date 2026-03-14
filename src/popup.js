@@ -601,7 +601,7 @@ function handleEulaModalKeydown(event) {
     if (event.key === 'Escape') {
         // Only allow ESC to close the modal if EULA is already accepted
         // (i.e., user opened it from the Terms of Service link to re-read it)
-        if (eulaAcceptanceStatus && eulaAcceptanceStatus.accepted && eulaAcceptanceStatus.eulaVersion === '2.2') {
+        if (eulaAcceptanceStatus && eulaAcceptanceStatus.accepted && eulaAcceptanceStatus.eulaVersion === '2.3') {
             hideEULAModal();
             pendingEulaAction = null;
         } else {
@@ -640,7 +640,22 @@ async function handleEULALanguageChange() {
         if (domElements.eulaVersionInfo) {
             domElements.eulaVersionInfo.textContent = `Version ${eulaContent.version} - Last updated: ${eulaContent.lastUpdated}`;
         }
-        
+
+        // Update EULA modal UI elements from the selected language's messages.json
+        try {
+            const msgsResponse = await fetch(`/_locales/${selectedLanguage}/messages.json`);
+            if (msgsResponse.ok) {
+                const msgsData = await msgsResponse.json();
+                const eulaModalKeys = ['eulaAgreeCheckbox', 'eulaAcceptButton', 'eulaDeclineButton', 'eulaLanguageLabel'];
+                eulaModalKeys.forEach(key => {
+                    if (msgsData[key] && msgsData[key].message) {
+                        const el = document.querySelector(`[data-i18n="${key}"]`);
+                        if (el) el.textContent = msgsData[key].message;
+                    }
+                });
+            }
+        } catch (_) { /* Fall through — EULA content already updated above */ }
+
         console.log(`EULA language changed to ${selectedLanguage} successfully`);
         
     } catch (error) {
@@ -666,13 +681,13 @@ async function handleEULAAccept() {
     try {
         showLoading('Accepting EULA...', 'generation');
 
-        const response = await acceptEULA('2.2', selectedLanguage);
+        const response = await acceptEULA('2.3', selectedLanguage);
 
         if (response.accepted) {
             // Update cached acceptance status
             eulaAcceptanceStatus = {
                 accepted: true,
-                eulaVersion: '2.2',
+                eulaVersion: '2.3',
                 language_code: selectedLanguage,
                 accepted_at: new Date().toISOString()
             };
@@ -775,7 +790,7 @@ async function validateEulaForGeneration() {
 
         const eulaStatus = await checkEULAStatus();
 
-        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.2') {
+        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.3') {
             console.log('EULA validation passed');
             return true;
         }
@@ -808,7 +823,7 @@ async function checkAndShowEulaOnStartup() {
         const eulaStatus = await checkEULAStatus();
 
         // Check if EULA has been accepted for the current version
-        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.2') {
+        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.3') {
             console.log('EULA already accepted for current version, skipping modal');
             return;
         }
