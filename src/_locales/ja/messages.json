@@ -12,6 +12,11 @@
   "langEnglish": { "message": "EN" },
   "langJapanese": { "message": "日本語" },
   "langSpanish": { "message": "Español" },
+  "langFrench": { "message": "Français" },
+  "langKorean": { "message": "한국어" },
+  "langChinese": { "message": "中文" },
+  "langGerman": { "message": "Deutsch" },
+  "langPortuguese": { "message": "Português" },
   "chatInputPlaceholder": { "message": "拡張機能を説明するか、質問するか、メッセージを入力してください..." },
   "attachImageButtonLabel": { "message": "画像を添付" },
   "sendMessageButtonLabel": { "message": "メッセージを送信" },
@@ -84,5 +89,10 @@
   "noChanges": { "message": "変更はありませんでした。" },
   "onDeviceNotAvailable": { "message": "オンデバイスAIはこのブラウザでは利用できません。" },
   "onDeviceDownloading": { "message": "オンデバイスAIモデルをダウンロード中。数分かかる場合があります..." },
-  "onDeviceBuildDisabled": { "message": "オンデバイスモデルはチャットと編集のみ対応しています。拡張機能を構築するにはクラウドモデルを選択してください。" }
+  "onDeviceBuildDisabled": { "message": "オンデバイスモデルはチャットと編集のみ対応しています。拡張機能を構築するにはクラウドモデルを選択してください。" },
+  "eulaTitle": { "message": "利用規約 & エンドユーザーライセンス契約" },
+  "eulaLanguageLabel": { "message": "言語:" },
+  "eulaAgreeCheckbox": { "message": "利用規約を読み、同意します" },
+  "eulaAcceptButton": { "message": "同意する" },
+  "eulaDeclineButton": { "message": "拒否する" }
 }
