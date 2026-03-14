@@ -12,6 +12,11 @@
   "langEnglish": { "message": "EN" },
   "langJapanese": { "message": "日本語" },
   "langSpanish": { "message": "Español" },
+  "langFrench": { "message": "Français" },
+  "langKorean": { "message": "한국어" },
+  "langChinese": { "message": "中文" },
+  "langGerman": { "message": "Deutsch" },
+  "langPortuguese": { "message": "Português" },
   "chatInputPlaceholder": { "message": "Describe tu extensión, haz una pregunta o escribe un mensaje..." },
   "attachImageButtonLabel": { "message": "Adjuntar imagen" },
   "sendMessageButtonLabel": { "message": "Enviar mensaje" },
@@ -84,5 +89,10 @@
   "noChanges": { "message": "No se realizaron cambios." },
   "onDeviceNotAvailable": { "message": "La IA en el dispositivo no está disponible en este navegador." },
   "onDeviceDownloading": { "message": "Descargando modelo de IA en el dispositivo. Esto puede tardar unos minutos..." },
-  "onDeviceBuildDisabled": { "message": "Los modelos en el dispositivo solo se pueden usar para chat y edición. Selecciona un modelo en la nube para crear extensiones." }
+  "onDeviceBuildDisabled": { "message": "Los modelos en el dispositivo solo se pueden usar para chat y edición. Selecciona un modelo en la nube para crear extensiones." },
+  "eulaTitle": { "message": "Términos de Servicio y Acuerdo de Licencia de Usuario Final" },
+  "eulaLanguageLabel": { "message": "Idioma:" },
+  "eulaAgreeCheckbox": { "message": "He leído y acepto los Términos de Servicio" },
+  "eulaAcceptButton": { "message": "Aceptar" },
+  "eulaDeclineButton": { "message": "Rechazar" }
 }
