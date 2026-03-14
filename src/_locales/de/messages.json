@@ -89,5 +89,10 @@
   "noChanges": { "message": "Keine Änderungen vorgenommen." },
   "onDeviceNotAvailable": { "message": "On-Device-KI ist in diesem Browser nicht verfügbar." },
   "onDeviceDownloading": { "message": "On-Device-KI-Modell wird heruntergeladen. Dies kann einige Minuten dauern..." },
-  "onDeviceBuildDisabled": { "message": "On-Device-Modelle können nur für Chat und Bearbeitung verwendet werden. Wählen Sie ein Cloud-Modell, um Erweiterungen zu erstellen." }
+  "onDeviceBuildDisabled": { "message": "On-Device-Modelle können nur für Chat und Bearbeitung verwendet werden. Wählen Sie ein Cloud-Modell, um Erweiterungen zu erstellen." },
+  "eulaTitle": { "message": "Nutzungsbedingungen und Endbenutzer-Lizenzvereinbarung" },
+  "eulaLanguageLabel": { "message": "Sprache:" },
+  "eulaAgreeCheckbox": { "message": "Ich habe die Nutzungsbedingungen gelesen und stimme ihnen zu" },
+  "eulaAcceptButton": { "message": "Akzeptieren" },
+  "eulaDeclineButton": { "message": "Ablehnen" }
 }
