@@ -221,8 +221,9 @@ body.dark-mode #dark-mode-toggle:hover {
 }
 
 #controls .combobox-input {
-    width: calc(100% - 36px); /* Adjusted for smaller toggle */
-    padding: 5px 8px; /* Reduced padding */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 30px 5px 8px; /* Right padding for the dropdown arrow */
     background-color: rgba(0, 0, 0, 0.06);
     color: var(--text-color);
     border: 1px solid var(--border-color);
@@ -257,22 +258,24 @@ body.dark-mode #controls .combobox-input:focus {
 
 .dropdown-toggle {
     position: absolute;
-    right: 0;
-    top: 0;
-    width: 36px; /* Reduced from 40px */
-    height: 100%;
+    right: 1px;
+    top: 1px;
+    bottom: 1px;
+    width: 28px;
     background: transparent;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary-color);
+    color: var(--text-color);
     transition: color 0.2s ease;
+    border-radius: 0 3px 3px 0;
 }
 
 #controls .dropdown-toggle {
-    color: var(--text-secondary-color);
+    color: var(--text-color);
+    pointer-events: auto;
 }
 
 #controls .dropdown-toggle:hover {
@@ -280,7 +283,7 @@ body.dark-mode #controls .combobox-input:focus {
 }
 
 body.dark-mode #controls .dropdown-toggle {
-    color: rgba(255, 255, 255, 0.7);
+    color: #ffffff;
 }
 
 body.dark-mode #controls .dropdown-toggle:hover {
@@ -288,7 +291,7 @@ body.dark-mode #controls .dropdown-toggle:hover {
 }
 
 .dropdown-toggle:hover {
-    color: var(--dodger-blue);
+    color: var(--text-color);
 }
 
 .dropdown-toggle svg {
