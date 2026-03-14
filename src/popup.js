@@ -871,7 +871,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const preferredLang = storageResult.userPreferredLanguage;
     const browserLang = chrome.i18n.getUILanguage().split('-')[0] || 'en';
-    const supportedLangs = ['en', 'ja', 'es'];
+    const supportedLangs = ['en', 'ja', 'es', 'fr', 'ko', 'zh', 'de', 'pt'];
 
     if (preferredLang && supportedLangs.includes(preferredLang)) {
         currentLang = preferredLang;
