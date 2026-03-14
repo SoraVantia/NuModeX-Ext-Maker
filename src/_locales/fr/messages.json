@@ -89,5 +89,10 @@
   "noChanges": { "message": "Aucune modification n'a été effectuée." },
   "onDeviceNotAvailable": { "message": "L'IA sur l'appareil n'est pas disponible dans ce navigateur." },
   "onDeviceDownloading": { "message": "Téléchargement du modèle d'IA sur l'appareil. Cela peut prendre quelques minutes..." },
-  "onDeviceBuildDisabled": { "message": "Les modèles sur l'appareil ne peuvent être utilisés que pour le chat et l'édition. Sélectionnez un modèle cloud pour créer des extensions." }
+  "onDeviceBuildDisabled": { "message": "Les modèles sur l'appareil ne peuvent être utilisés que pour le chat et l'édition. Sélectionnez un modèle cloud pour créer des extensions." },
+  "eulaTitle": { "message": "Conditions d'utilisation et Contrat de licence utilisateur final" },
+  "eulaLanguageLabel": { "message": "Langue :" },
+  "eulaAgreeCheckbox": { "message": "J'ai lu et j'accepte les Conditions d'utilisation" },
+  "eulaAcceptButton": { "message": "Accepter" },
+  "eulaDeclineButton": { "message": "Refuser" }
 }
