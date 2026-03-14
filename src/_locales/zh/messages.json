@@ -89,5 +89,10 @@
   "noChanges": { "message": "未进行任何更改。" },
   "onDeviceNotAvailable": { "message": "此浏览器不支持设备端AI。" },
   "onDeviceDownloading": { "message": "正在下载设备端AI模型。这可能需要几分钟..." },
-  "onDeviceBuildDisabled": { "message": "设备端模型仅可用于聊天和编辑。请选择云端模型来构建扩展程序。" }
+  "onDeviceBuildDisabled": { "message": "设备端模型仅可用于聊天和编辑。请选择云端模型来构建扩展程序。" },
+  "eulaTitle": { "message": "服务条款和最终用户许可协议" },
+  "eulaLanguageLabel": { "message": "语言：" },
+  "eulaAgreeCheckbox": { "message": "我已阅读并同意服务条款" },
+  "eulaAcceptButton": { "message": "接受" },
+  "eulaDeclineButton": { "message": "拒绝" }
 }
