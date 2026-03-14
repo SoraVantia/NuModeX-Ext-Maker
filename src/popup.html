@@ -189,9 +189,9 @@
             <!-- EULA Modal -->
             <div id="eula-modal" class="modal" style="display: none;">
                 <div class="modal-content eula-modal-content">
-                    <h2 id="eula-title">Terms of Service & End User License Agreement</h2>
+                    <h2 id="eula-title" data-i18n="eulaTitle">Terms of Service & End User License Agreement</h2>
                     <div id="eula-language-selector">
-                        <label for="eula-language">Language:</label>
+                        <label for="eula-language" data-i18n="eulaLanguageLabel">Language:</label>
                         <select id="eula-language">
                             <option value="en">English</option>
                             <option value="ja">日本語</option>
@@ -208,11 +208,11 @@
                     <div class="eula-actions">
                         <label class="eula-checkbox-label">
                             <input type="checkbox" id="eula-accept-checkbox">
-                            I have read and agree to the Terms of Service
+                            <span data-i18n="eulaAgreeCheckbox">I have read and agree to the Terms of Service</span>
                         </label>
                         <div class="eula-buttons">
-                            <button id="eula-accept-button" disabled>Accept</button>
-                            <button id="eula-decline-button">Decline</button>
+                            <button id="eula-accept-button" data-i18n="eulaAcceptButton" disabled>Accept</button>
+                            <button id="eula-decline-button" data-i18n="eulaDeclineButton">Decline</button>
                         </div>
                     </div>
                 </div>
