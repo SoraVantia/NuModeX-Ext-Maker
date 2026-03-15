@@ -30,6 +30,9 @@ const MAX_UNDO_STEPS = 10;
 let lastEditDiffs = []; // Stores {filename, oldContent, newContent} for each file changed in the last AI edit
 let currentDiffFormat = 'line-by-line'; // 'line-by-line' or 'side-by-side'
 
+// --- Multi-Project State ---
+let projectList = []; // Array of {id, name, updatedAt}
+
 // --- IndexedDB Project Storage ---
 const db = new Dexie('NuModeXProjects');
 db.version(1).stores({
@@ -372,6 +375,9 @@ function updateButtonStates() {
     if (domElements.editFileButton) {
         domElements.editFileButton.disabled = !selectedFileForEdit || generatedFiles.length === 0;
     }
+    if (domElements.copyFileButton) {
+        domElements.copyFileButton.disabled = !selectedFileForEdit || generatedFiles.length === 0;
+    }
     if (domElements.addFileButton) {
         domElements.addFileButton.disabled = generatedFiles.length === 0;
     }
@@ -380,6 +386,10 @@ function updateButtonStates() {
     }
     if (domElements.viewChangesButton) {
         domElements.viewChangesButton.disabled = lastEditDiffs.length === 0;
+    }
+    if (domElements.previewButton) {
+        const hasPopupHtml = generatedFiles.some(f => f.name === 'popup.html');
+        domElements.previewButton.disabled = !hasPopupHtml;
     }
 }
 
@@ -397,8 +407,20 @@ function clearGeneratedFiles() {
 // --- Dark Mode Functions ---
 function loadDarkModePreference() {
     chrome.storage.local.get(['darkMode'], result => {
-        if (result.darkMode !== false) {
-            enableDarkMode();
+        if (result.darkMode !== undefined) {
+            // User has a saved preference — use it
+            if (result.darkMode) {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+        } else {
+            // No saved preference — detect system theme
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                document.body.classList.add('dark-mode');
+                updateDarkModeIcon(true);
+            }
         }
     });
 }
@@ -694,9 +716,18 @@ async function handleEULAAccept() {
             
             hideEULAModal();
             updateStatus('EULA accepted successfully', 'success');
-            
+
             console.log('EULA accepted successfully');
-            
+
+            // Sync EULA language selection to main UI
+            const eulaLang = domElements.eulaLanguageSelect?.value;
+            if (eulaLang && eulaLang !== currentLang) {
+                switchLanguage(eulaLang);
+                if (domElements.languageSwitcher) {
+                    domElements.languageSwitcher.value = eulaLang;
+                }
+            }
+
             // Execute pending action if any
             if (pendingEulaAction) {
                 console.log('Executing pending action after EULA acceptance');
@@ -886,7 +917,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const preferredLang = storageResult.userPreferredLanguage;
     const browserLang = chrome.i18n.getUILanguage().split('-')[0] || 'en';
-    const supportedLangs = ['en', 'ja', 'es', 'fr', 'ko', 'zh', 'de', 'pt'];
+    const supportedLangs = ['en', 'ja', 'es', 'fr', 'ko', 'zh', 'de', 'pt', 'it'];
 
     if (preferredLang && supportedLangs.includes(preferredLang)) {
         currentLang = preferredLang;
@@ -904,6 +935,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Show main app directly — no auth required
     loadApiKey();
+    await loadCustomModel();
     loadSelectedModel();
     setupEventListeners();
     setupCombobox();
@@ -922,6 +954,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 function cacheDomElements() {
     console.log("cacheDomElements: Caching DOM elements...");
     domElements = {
+        // Project picker elements
+        projectSelector: document.getElementById('project-selector'),
+        newProjectButton: document.getElementById('new-project-button'),
+        projectActionsButton: document.getElementById('project-actions-button'),
+        projectActionsMenu: document.getElementById('project-actions-menu'),
+        renameProjectButton: document.getElementById('rename-project-button'),
+        deleteProjectButton: document.getElementById('delete-project-button'),
         // Existing elements
         languageSwitcher: document.getElementById('language-switcher'),
         settingsButton: document.getElementById('settings-button'),
@@ -929,6 +968,7 @@ function cacheDomElements() {
         apiKeySection: document.getElementById('api-key-section'),
         apiKeyInput: document.getElementById('api-key-input'),
         saveApiKeyButton: document.getElementById('save-api-key-button'),
+        deleteApiKeyButton: document.getElementById('delete-api-key-button'),
         apiKeyStatus: document.getElementById('api-key-status'),
         closeApiModalButton: document.getElementById('close-api-modal'),
         conversationDisplayArea: document.getElementById('conversation-display-area'),
@@ -998,9 +1038,134 @@ function cacheDomElements() {
 
         // More actions dropdown
         moreActionsButton: document.getElementById('more-actions-button'),
-        moreActionsDropdown: document.getElementById('more-actions-dropdown')
+        moreActionsDropdown: document.getElementById('more-actions-dropdown'),
+        copyFileButton: document.getElementById('copy-file-button'),
+
+        // Preview modal elements
+        previewButton: document.getElementById('preview-button'),
+        previewModal: document.getElementById('preview-modal'),
+        previewIframe: document.getElementById('preview-iframe'),
+        closePreviewModal: document.getElementById('close-preview-modal'),
+
+        // Custom model elements
+        customEndpointInput: document.getElementById('custom-endpoint-input'),
+        customModelNameInput: document.getElementById('custom-model-name-input'),
+        customApiKeyInput: document.getElementById('custom-api-key-input'),
+        saveCustomModelButton: document.getElementById('save-custom-model-button'),
+        deleteCustomModelButton: document.getElementById('delete-custom-model-button'),
+        customModelStatus: document.getElementById('custom-model-status'),
+
+        // Import project elements
+        importProjectButton: document.getElementById('import-project-button'),
+        importFileInput: document.getElementById('import-file-input'),
     };
     console.log("cacheDomElements: Caching complete.");
+}
+
+// --- Custom Model ---
+async function loadCustomModel() {
+    return new Promise(resolve => {
+        chrome.storage.local.get(['customModel'], result => {
+            if (result.customModel && result.customModel.endpoint && result.customModel.modelName) {
+                // Remove any existing custom model from the array first
+                const existingIndex = AI_MODELS.findIndex(m => m.id === 'custom-local');
+                if (existingIndex !== -1) AI_MODELS.splice(existingIndex, 1);
+
+                // Add the custom model
+                AI_MODELS.push({
+                    id: 'custom-local',
+                    name: `Custom: ${result.customModel.modelName}`,
+                    provider: 'openai',
+                    endpoint: result.customModel.endpoint,
+                    model: result.customModel.modelName,
+                    isCustom: true,
+                    customApiKey: result.customModel.apiKey || ''
+                });
+
+                // Populate the settings fields
+                if (domElements.customEndpointInput) domElements.customEndpointInput.value = result.customModel.endpoint;
+                if (domElements.customModelNameInput) domElements.customModelNameInput.value = result.customModel.modelName;
+                if (domElements.customApiKeyInput) domElements.customApiKeyInput.value = result.customModel.apiKey || '';
+                if (domElements.deleteCustomModelButton) domElements.deleteCustomModelButton.disabled = false;
+            }
+            resolve();
+        });
+    });
+}
+
+function saveCustomModel() {
+    const endpoint = domElements.customEndpointInput?.value.trim();
+    const modelName = domElements.customModelNameInput?.value.trim();
+    const customApiKey = domElements.customApiKeyInput?.value.trim();
+
+    if (!endpoint || !modelName) {
+        updateStatus(getTranslatedMessage('customModelMissingFields') || 'Please enter both an endpoint URL and model name.', 'error', domElements.customModelStatus);
+        return;
+    }
+
+    // Basic URL validation
+    try {
+        new URL(endpoint);
+    } catch (e) {
+        updateStatus(getTranslatedMessage('customModelInvalidUrl') || 'Please enter a valid URL.', 'error', domElements.customModelStatus);
+        return;
+    }
+
+    const customModel = { endpoint, modelName, apiKey: customApiKey };
+
+    chrome.storage.local.set({ customModel }, () => {
+        if (chrome.runtime.lastError) {
+            updateStatus('Error saving custom model.', 'error', domElements.customModelStatus);
+            return;
+        }
+
+        // Remove any existing custom model from the array
+        const existingIndex = AI_MODELS.findIndex(m => m.id === 'custom-local');
+        if (existingIndex !== -1) AI_MODELS.splice(existingIndex, 1);
+
+        // Add the updated custom model
+        AI_MODELS.push({
+            id: 'custom-local',
+            name: `Custom: ${modelName}`,
+            provider: 'openai',
+            endpoint: endpoint,
+            model: modelName,
+            isCustom: true,
+            customApiKey: customApiKey
+        });
+
+        if (domElements.deleteCustomModelButton) domElements.deleteCustomModelButton.disabled = false;
+        updateStatus(getTranslatedMessage('customModelSaved') || 'Custom model saved.', 'success', domElements.customModelStatus);
+
+        // Clear status after delay
+        setTimeout(() => {
+            if (domElements.customModelStatus) updateStatus('', 'info', domElements.customModelStatus);
+        }, 2000);
+    });
+}
+
+function deleteCustomModel() {
+    chrome.storage.local.remove('customModel', () => {
+        // Remove from AI_MODELS array
+        const existingIndex = AI_MODELS.findIndex(m => m.id === 'custom-local');
+        if (existingIndex !== -1) AI_MODELS.splice(existingIndex, 1);
+
+        // Clear inputs
+        if (domElements.customEndpointInput) domElements.customEndpointInput.value = '';
+        if (domElements.customModelNameInput) domElements.customModelNameInput.value = '';
+        if (domElements.customApiKeyInput) domElements.customApiKeyInput.value = '';
+        if (domElements.deleteCustomModelButton) domElements.deleteCustomModelButton.disabled = true;
+
+        // If the custom model was currently selected, deselect it
+        if (selectedModel && selectedModel.id === 'custom-local') {
+            selectedModel = null;
+        }
+
+        updateStatus(getTranslatedMessage('customModelDeleted') || 'Custom model deleted.', 'success', domElements.customModelStatus);
+        setTimeout(() => {
+            if (domElements.customModelStatus) updateStatus('', 'info', domElements.customModelStatus);
+        }, 2000);
+    });
 }
 
 // --- I18n ---
@@ -1328,6 +1493,7 @@ function loadApiKey() {
             if (domElements.apiKeyInput) domElements.apiKeyInput.value = apiKey;
             updateStatus('apiKeyLoadedFeedback', 'success', domElements.apiKeyStatus);
             console.log("loadApiKey: API key loaded from storage.");
+            if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = false;
             // Clear success message after a delay if modal is not open
             if (domElements.apiKeySection && domElements.apiKeySection.style.display === 'none') {
                 setTimeout(() => {
@@ -1339,6 +1505,7 @@ function loadApiKey() {
         } else {
             updateStatus('apiKeyMissing', 'error', domElements.apiKeyStatus);
             console.log("loadApiKey: API key not found in storage.");
+            if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = true;
         }
         updateButtonStates();
     });
@@ -1361,6 +1528,7 @@ function saveApiKey() {
             }
             updateStatus('apiKeySavedFeedback', 'success', domElements.apiKeyStatus);
             console.log("saveApiKey: API key saved.");
+            if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = false;
             setTimeout(() => {
                 if (domElements.apiKeySection) domElements.apiKeySection.style.display = 'none';
                 // Clear the main status bar's API key message if it was the "saved" one
@@ -1385,6 +1553,28 @@ function saveApiKey() {
     }
 }
 
+function deleteApiKey() {
+    // Clear the stored key
+    apiKey = '';
+    chrome.storage.local.remove('geminiApiKey');
+
+    // Clear the input field
+    if (domElements.apiKeyInput) {
+        domElements.apiKeyInput.value = '';
+    }
+
+    // Show feedback
+    updateStatus(getTranslatedMessage('apiKeyDeletedFeedback') || 'API Key deleted.', 'success', domElements.apiKeyStatus);
+
+    // Update button states
+    updateButtonStates();
+
+    // Disable delete button since key is now empty
+    if (domElements.deleteApiKeyButton) {
+        domElements.deleteApiKeyButton.disabled = true;
+    }
+}
+
 function toggleApiKeySection() {
     console.log("toggleApiKeySection: Called.");
     if (!domElements.apiKeySection) {
@@ -1401,6 +1591,10 @@ function toggleApiKeySection() {
             if (apiKey) updateStatus('apiKeyLoadedFeedback', 'info', domElements.apiKeyStatus);
             else updateStatus('apiKeyMissing', 'error', domElements.apiKeyStatus);
         }
+        // Update delete button state based on whether key exists
+        if (domElements.deleteApiKeyButton) {
+            domElements.deleteApiKeyButton.disabled = !apiKey;
+        }
     } else { // Modal is now hidden
         // Clear specific modal status, or main status if it was about API key
         if (domElements.apiKeyStatus && (domElements.apiKeyStatus.textContent === getTranslatedMessage('apiKeyLoadedFeedback') || domElements.apiKeyStatus.textContent === getTranslatedMessage('apiKeyMissing'))) {
@@ -1416,7 +1610,7 @@ function handleSendMessage() {
     const text = domElements.chatInputField.value.trim();
     if (!text && attachedFilesData.length === 0) return;
 
-    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
         updateStatus('errorApiKeyMissing', 'error');
         toggleApiKeySection(); // Show API key modal
         return;
@@ -1455,7 +1649,7 @@ async function handleGenerateExtension() {
 
     try {
         // STEP 1: Check API key (not needed for on-device models)
-        if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
+        if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
             updateStatus('errorApiKeyMissing', 'error');
             toggleApiKeySection();
             return;
@@ -1695,7 +1889,7 @@ function addMessageToChatDOM(sender, text, images = []) {
 
 // --- API Interaction ---
 async function callAPI(isGenerationRequest, systemPromptOverride = null) {
-    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
         updateStatus('errorApiKeyMissing', 'error');
         toggleApiKeySection();
         return;
@@ -1863,12 +2057,19 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
         body.temperature = isGenerationRequest ? 0.3 : 0.7;
     }
 
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    // Use custom API key for custom models, or global API key for cloud models
+    const authKey = selectedModel.isCustom ? selectedModel.customApiKey : apiKey;
+    if (authKey) {
+        headers['Authorization'] = `Bearer ${authKey}`;
+    }
+
     const response = await fetch(selectedModel.endpoint, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
+        headers: headers,
         body: JSON.stringify(body)
     });
 
@@ -2027,6 +2228,172 @@ async function callOnDeviceAPI(prompt, systemPrompt, isEdit = false) {
 }
 
 // --- IndexedDB Project Persistence ---
+// --- Multi-Project Management ---
+async function loadProjectList() {
+    const projects = await db.projects.orderBy('updatedAt').reverse().toArray();
+    projectList = projects.map(p => ({ id: p.id, name: p.name || 'Untitled Project', updatedAt: p.updatedAt }));
+    renderProjectSelector();
+}
+
+function renderProjectSelector() {
+    if (!domElements.projectSelector) return;
+    domElements.projectSelector.innerHTML = '';
+
+    projectList.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project.id;
+        option.textContent = project.name;
+        if (project.id === currentProjectId) {
+            option.selected = true;
+        }
+        domElements.projectSelector.appendChild(option);
+    });
+
+    // Disable delete if only one project exists
+    if (domElements.deleteProjectButton) {
+        domElements.deleteProjectButton.disabled = projectList.length <= 1;
+    }
+}
+
+async function switchProject(projectId) {
+    // Save current project first
+    if (currentProjectId) {
+        await saveProjectToDb();
+    }
+
+    // Clear current state
+    conversationHistory = [];
+    generatedFiles = [];
+    attachedFilesData = [];
+    undoStack = [];
+    lastEditDiffs = [];
+    selectedFileForEdit = null;
+    isManualEditMode = false;
+
+    // Clear UI
+    if (domElements.conversationDisplayArea) domElements.conversationDisplayArea.innerHTML = '';
+    if (domElements.chatInputField) domElements.chatInputField.value = '';
+    renderImagePreviews();
+    clearGeneratedFiles();
+    if (domElements.improvePromptArea) domElements.improvePromptArea.style.display = 'none';
+    if (domElements.editPromptArea) domElements.editPromptArea.style.display = 'none';
+    if (domElements.addFileArea) domElements.addFileArea.style.display = 'none';
+
+    // Load the selected project
+    const project = await db.projects.get(projectId);
+    if (project) {
+        currentProjectId = project.id;
+        generatedFiles = project.files || [];
+        conversationHistory = project.conversationHistory || [];
+
+        // Restore selected model if saved
+        if (project.selectedModelId) {
+            const model = getAvailableModels().find(m => m.id === project.selectedModelId);
+            if (model) selectModel(model);
+        }
+
+        // Restore UI
+        displayGeneratedFiles(generatedFiles);
+
+        // Restore conversation display
+        conversationHistory.forEach(msg => {
+            const role = msg.role === 'user' ? 'user' : 'llm';
+            const textPart = msg.parts?.find(p => p.text);
+            if (textPart) addMessageToChatDOM(role, textPart.text);
+        });
+    }
+
+    updateButtonStates();
+    showPlaceholderIfNeeded();
+    renderProjectSelector();
+}
+
+async function createNewProject() {
+    // Save current project first
+    if (currentProjectId) {
+        await saveProjectToDb();
+    }
+
+    // Prompt for name
+    const name = prompt(getTranslatedMessage('newProjectPrompt') || 'Enter project name:', 'Untitled Project');
+    if (name === null) return; // User cancelled
+
+    const trimmedName = name.trim() || 'Untitled Project';
+
+    // Create new project in DB
+    const newId = await db.projects.add({
+        name: trimmedName,
+        files: [],
+        conversationHistory: [],
+        selectedModelId: selectedModel?.id || null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    });
+
+    // Switch to the new project (this clears state and UI)
+    currentProjectId = newId;
+    conversationHistory = [];
+    generatedFiles = [];
+    attachedFilesData = [];
+    undoStack = [];
+    lastEditDiffs = [];
+    selectedFileForEdit = null;
+    isManualEditMode = false;
+
+    // Clear UI
+    if (domElements.conversationDisplayArea) domElements.conversationDisplayArea.innerHTML = '';
+    if (domElements.chatInputField) domElements.chatInputField.value = '';
+    renderImagePreviews();
+    clearGeneratedFiles();
+    if (domElements.improvePromptArea) domElements.improvePromptArea.style.display = 'none';
+    if (domElements.editPromptArea) domElements.editPromptArea.style.display = 'none';
+    if (domElements.addFileArea) domElements.addFileArea.style.display = 'none';
+
+    // Refresh project list and selector
+    await loadProjectList();
+
+    updateButtonStates();
+    showPlaceholderIfNeeded();
+    updateStatus(getTranslatedMessage('newProjectCreated') || 'New project created.', 'success');
+    if (domElements.chatInputField) domElements.chatInputField.focus();
+}
+
+async function renameCurrentProject() {
+    if (!currentProjectId) return;
+
+    const currentProject = projectList.find(p => p.id === currentProjectId);
+    const currentName = currentProject?.name || 'Untitled Project';
+
+    const newName = prompt(getTranslatedMessage('renameProjectPrompt') || 'Enter new project name:', currentName);
+    if (newName === null || newName.trim() === '') return;
+
+    await db.projects.update(currentProjectId, { name: newName.trim(), updatedAt: new Date() });
+    await loadProjectList();
+    updateStatus(getTranslatedMessage('projectRenamed') || 'Project renamed.', 'success');
+}
+
+async function deleteCurrentProject() {
+    if (!currentProjectId || projectList.length <= 1) return;
+
+    const currentProject = projectList.find(p => p.id === currentProjectId);
+    const confirmed = confirm(
+        (getTranslatedMessage('deleteProjectConfirm') || 'Delete project "{name}"? This cannot be undone.')
+            .replace('{name}', currentProject?.name || 'Untitled Project')
+    );
+
+    if (!confirmed) return;
+
+    await db.projects.delete(currentProjectId);
+
+    // Switch to the most recent remaining project
+    await loadProjectList();
+    if (projectList.length > 0) {
+        await switchProject(projectList[0].id);
+    }
+
+    updateStatus(getTranslatedMessage('projectDeleted') || 'Project deleted.', 'success');
+}
+
 async function saveProjectToDb() {
     const now = new Date();
     if (currentProjectId) {
@@ -2048,8 +2415,87 @@ async function saveProjectToDb() {
     }
 }
 
+async function importProject(file) {
+    try {
+        const text = await file.text();
+        let importData;
+
+        try {
+            importData = JSON.parse(text);
+        } catch (e) {
+            updateStatus(getTranslatedMessage('importInvalidJson') || 'Invalid JSON file.', 'error');
+            return;
+        }
+
+        // Validate structure
+        if (!importData.project || !importData.exportedFrom || importData.exportedFrom !== 'NuModeX Ext Maker') {
+            updateStatus(getTranslatedMessage('importInvalidFormat') || 'This file is not a valid NuModeX Ext Maker project.', 'error');
+            return;
+        }
+
+        const projectData = importData.project;
+
+        if (!projectData.files || !Array.isArray(projectData.files)) {
+            updateStatus(getTranslatedMessage('importInvalidFormat') || 'This file is not a valid NuModeX Ext Maker project.', 'error');
+            return;
+        }
+
+        // Validate each file has name and content
+        for (const f of projectData.files) {
+            if (!f.name || typeof f.content !== 'string') {
+                updateStatus(getTranslatedMessage('importInvalidFormat') || 'This file is not a valid NuModeX Ext Maker project.', 'error');
+                return;
+            }
+        }
+
+        // Save current project first
+        if (currentProjectId) {
+            await saveProjectToDb();
+        }
+
+        // Create new project from imported data
+        const newId = await db.projects.add({
+            name: projectData.name || 'Imported Project',
+            files: projectData.files,
+            conversationHistory: projectData.conversationHistory || [],
+            selectedModelId: projectData.selectedModelId || null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        // Switch to the imported project
+        await switchProject(newId);
+        await loadProjectList();
+
+        updateStatus(
+            (getTranslatedMessage('importSuccess') || 'Project "{name}" imported successfully.')
+                .replace('{name}', projectData.name || 'Imported Project'),
+            'success'
+        );
+
+    } catch (e) {
+        console.error('Import error:', e);
+        updateStatus(getTranslatedMessage('importFailed') || 'Failed to import project.', 'error');
+    }
+}
+
 async function loadLastProject() {
-    const lastProject = await db.projects.orderBy('updatedAt').reverse().first();
+    let lastProject = await db.projects.orderBy('updatedAt').reverse().first();
+
+    // First launch: create a default project if none exist
+    if (!lastProject) {
+        const now = new Date();
+        const newId = await db.projects.add({
+            name: 'Untitled Project',
+            files: [],
+            conversationHistory: [],
+            selectedModelId: null,
+            createdAt: now,
+            updatedAt: now
+        });
+        lastProject = await db.projects.get(newId);
+    }
+
     if (lastProject) {
         currentProjectId = lastProject.id;
         generatedFiles = lastProject.files || [];
@@ -2069,6 +2515,9 @@ async function loadLastProject() {
             if (textPart) addMessageToChatDOM(role, textPart.text);
         });
     }
+
+    // Load full project list and populate selector
+    await loadProjectList();
 }
 
 // --- Edit System Prompt Helpers ---
@@ -2116,7 +2565,7 @@ function buildSelectiveContext(targetFileName) {
 
 // --- Incremental Edit API Call ---
 async function callEditAPI(targetFileName, userRequest) {
-    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device')) {
+    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
         updateStatus('errorApiKeyMissing', 'error');
         return;
     }
@@ -2324,6 +2773,74 @@ function hideDiffModal() {
     if (domElements.diffModal) {
         domElements.diffModal.style.display = 'none';
         console.log('Diff modal hidden');
+    }
+}
+
+// --- Preview Modal ---
+function buildInlinedPreviewHTML() {
+    // Find popup.html in generated files
+    const popupHtml = generatedFiles.find(f => f.name === 'popup.html');
+    if (!popupHtml) return null;
+
+    let html = popupHtml.content;
+
+    // Inline CSS: replace <link rel="stylesheet" href="X"> with <style>content</style>
+    html = html.replace(/<link\s+[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*\/?>/gi, (match, href) => {
+        const cssFile = generatedFiles.find(f => f.name === href);
+        if (cssFile) {
+            return `<style>${cssFile.content}</style>`;
+        }
+        return '<!-- ' + href + ' not found -->';
+    });
+
+    // Also handle <link href="X" rel="stylesheet"> (href before rel)
+    html = html.replace(/<link\s+[^>]*href=["']([^"']+)["'][^>]*rel=["']stylesheet["'][^>]*\/?>/gi, (match, href) => {
+        const cssFile = generatedFiles.find(f => f.name === href);
+        if (cssFile) {
+            return `<style>${cssFile.content}</style>`;
+        }
+        return '<!-- ' + href + ' not found -->';
+    });
+
+    // Inline JS: replace <script src="X"></script> with <script>content</script>
+    html = html.replace(/<script\s+[^>]*src=["']([^"']+)["'][^>]*><\/script>/gi, (match, src) => {
+        const jsFile = generatedFiles.find(f => f.name === src);
+        if (jsFile) {
+            return `<script>${jsFile.content}<\/script>`;
+        }
+        return '<!-- ' + src + ' not found -->';
+    });
+
+    // Replace image references with placeholder (images can't load in sandbox)
+    // Leave them as-is — they'll show broken image icons which is expected for a visual preview
+
+    return html;
+}
+
+function showPreviewModal() {
+    if (!domElements.previewModal || !domElements.previewIframe) return;
+    if (generatedFiles.length === 0) return;
+
+    const inlinedHTML = buildInlinedPreviewHTML();
+    if (!inlinedHTML) {
+        updateStatus(getTranslatedMessage('previewNoPopup') || 'No popup.html found in generated files.', 'error');
+        return;
+    }
+
+    // Set the iframe content using srcdoc
+    domElements.previewIframe.srcdoc = inlinedHTML;
+
+    // Show modal
+    domElements.previewModal.style.display = 'block';
+}
+
+function hidePreviewModal() {
+    if (domElements.previewModal) {
+        domElements.previewModal.style.display = 'none';
+    }
+    // Clear iframe content when closing
+    if (domElements.previewIframe) {
+        domElements.previewIframe.srcdoc = '';
     }
 }
 
@@ -2601,6 +3118,22 @@ function processGenerationResponse(llmResponseText) {
                 const successMsg = getTranslatedMessage('statusGeneratedMessageContent') || `Extension files generated successfully!`;
                 addMessageToChatDOM('llm', successMsg);
                 conversationHistory.push({ role: 'model', parts: [{text: successMsg}]});
+
+                // Auto-name project based on manifest.json if still "Untitled Project"
+                const currentProject = projectList.find(p => p.id === currentProjectId);
+                if (currentProject && currentProject.name === 'Untitled Project') {
+                    const manifestFile = generatedFiles.find(f => f.name === 'manifest.json');
+                    if (manifestFile) {
+                        try {
+                            const manifest = JSON.parse(manifestFile.content);
+                            if (manifest.name && manifest.name.trim()) {
+                                db.projects.update(currentProjectId, { name: manifest.name.trim(), updatedAt: new Date() });
+                                loadProjectList();
+                            }
+                        } catch (e) { /* ignore parse errors */ }
+                    }
+                }
+
                 saveProjectToDb();
             } else {
                 clearGeneratedFiles();
@@ -2635,6 +3168,7 @@ function displayGeneratedFiles(files) {
         showPlaceholderIfNeeded(); // Show "no files" placeholder
         if(domElements.downloadZipButton) domElements.downloadZipButton.disabled = true;
         if (domElements.editFileButton) domElements.editFileButton.disabled = true;
+        if (domElements.copyFileButton) domElements.copyFileButton.disabled = true;
         if (domElements.addFileButton) domElements.addFileButton.disabled = true;
         if (domElements.improveExtensionButton) domElements.improveExtensionButton.disabled = true;
         selectedFileForEdit = null;
@@ -2694,6 +3228,7 @@ function selectFileForView(listItem, files, fileListElement) {
         displayFileContent(file.name, file.content);
         selectedFileForEdit = file.name; // Track selected file
         if (domElements.editFileButton) domElements.editFileButton.disabled = false;
+        if (domElements.copyFileButton) domElements.copyFileButton.disabled = false;
 
         // Show the manual edit toggle button
         const toggleBtn = document.getElementById('toggle-edit-mode');
@@ -2768,6 +3303,39 @@ async function downloadAllFilesAsZip() {
     }
 }
 
+// --- Typing Indicator ---
+function showTypingIndicator() {
+    if (!domElements.conversationDisplayArea) return;
+
+    // Remove any existing indicator first
+    hideTypingIndicator();
+
+    const indicator = document.createElement('div');
+    indicator.className = 'typing-indicator-message';
+    indicator.id = 'typing-indicator-bubble';
+
+    const label = document.createElement('div');
+    label.className = 'typing-indicator-label';
+    label.textContent = getTranslatedMessage('chatLlmLabel') || 'NuModeX Ext Maker';
+
+    const dots = document.createElement('div');
+    dots.className = 'typing-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+
+    indicator.appendChild(label);
+    indicator.appendChild(dots);
+
+    domElements.conversationDisplayArea.appendChild(indicator);
+    domElements.conversationDisplayArea.scrollTop = domElements.conversationDisplayArea.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const existing = document.getElementById('typing-indicator-bubble');
+    if (existing) {
+        existing.remove();
+    }
+}
+
 // --- UI & State Updates ---
 function showLoading(messageText, type = 'message') {
     let msgKey = type === 'message' ? 'statusSendingMessage' : 'statusGenerating';
@@ -2781,9 +3349,11 @@ function showLoading(messageText, type = 'message') {
       domElements.loadingIndicator.style.display = 'inline';
     }
     if(domElements.statusMessageArea) domElements.statusMessageArea.textContent = ''; // Clear previous status message
+    showTypingIndicator();
 }
 
 function hideLoading() {
+    hideTypingIndicator();
     if(domElements.loadingIndicator) {
       domElements.loadingIndicator.style.display = 'none';
       domElements.loadingIndicator.textContent = '';
@@ -2792,8 +3362,9 @@ function hideLoading() {
 }
 
 function startOver() {
-    console.log("startOver: Resetting UI and state.");
+    console.log("startOver: Resetting current project content.");
     conversationHistory = [];
+    generatedFiles = [];
     attachedFilesData = [];
 
     if (domElements.conversationDisplayArea) domElements.conversationDisplayArea.innerHTML = '';
@@ -2805,8 +3376,7 @@ function startOver() {
     // Clear pending EULA actions
     pendingEulaAction = null;
 
-    // Reset incremental editing state
-    currentProjectId = null; // Next save will create a new project
+    // Reset incremental editing state — keep currentProjectId so we stay in the same project
     selectedFileForEdit = null;
     undoStack = [];
     lastEditDiffs = [];
@@ -2814,6 +3384,11 @@ function startOver() {
     if (domElements.improvePromptArea) domElements.improvePromptArea.style.display = 'none';
     if (domElements.editPromptArea) domElements.editPromptArea.style.display = 'none';
     if (domElements.addFileArea) domElements.addFileArea.style.display = 'none';
+
+    // Save the cleared state to DB immediately
+    if (currentProjectId) {
+        saveProjectToDb();
+    }
 
     updateStatus('startOverConfirmation', 'success');
     if (domElements.chatInputField) domElements.chatInputField.focus();
@@ -2824,7 +3399,49 @@ function startOver() {
 // --- Event Listeners Setup ---
 function setupEventListeners() {
     console.log("setupEventListeners: Attaching event listeners...");
-    
+
+    // Project picker listeners
+    if (domElements.projectSelector) {
+        domElements.projectSelector.addEventListener('change', (e) => {
+            const selectedId = parseInt(e.target.value, 10);
+            if (selectedId && selectedId !== currentProjectId) {
+                switchProject(selectedId);
+            }
+        });
+    }
+
+    if (domElements.newProjectButton) {
+        domElements.newProjectButton.addEventListener('click', createNewProject);
+    }
+
+    if (domElements.renameProjectButton) {
+        domElements.renameProjectButton.addEventListener('click', () => {
+            if (domElements.projectActionsMenu) domElements.projectActionsMenu.classList.remove('show');
+            renameCurrentProject();
+        });
+    }
+
+    if (domElements.deleteProjectButton) {
+        domElements.deleteProjectButton.addEventListener('click', () => {
+            if (domElements.projectActionsMenu) domElements.projectActionsMenu.classList.remove('show');
+            deleteCurrentProject();
+        });
+    }
+
+    // Project actions dropdown toggle
+    if (domElements.projectActionsButton && domElements.projectActionsMenu) {
+        domElements.projectActionsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            domElements.projectActionsMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!domElements.projectActionsMenu.contains(e.target) && e.target !== domElements.projectActionsButton) {
+                domElements.projectActionsMenu.classList.remove('show');
+            }
+        });
+    }
+
     if (domElements.languageSwitcher) {
         domElements.languageSwitcher.addEventListener('change', (e) => switchLanguage(e.target.value));
         console.log("Attached listener to languageSwitcher");
@@ -2850,6 +3467,11 @@ function setupEventListeners() {
         console.log("Attached listener to saveApiKeyButton");
     } else { console.error("setupEventListeners: domElements.saveApiKeyButton is null!"); }
 
+    if (domElements.deleteApiKeyButton) {
+        domElements.deleteApiKeyButton.addEventListener('click', deleteApiKey);
+        console.log("Attached listener to deleteApiKeyButton");
+    }
+
     if (domElements.apiKeyInput) {
         domElements.apiKeyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveApiKey(); } });
         console.log("Attached keypress listener to apiKeyInput");
@@ -2874,8 +3496,14 @@ function setupEventListeners() {
     } else { console.error("setupEventListeners: domElements.sendMessageButton is null!"); }
 
     if (domElements.chatInputField) {
-        domElements.chatInputField.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
+        domElements.chatInputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                handleGenerateExtension();
+            } else if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
         });
         domElements.chatInputField.addEventListener('input', updateButtonStates); // Update on input change
         console.log("Attached listeners to chatInputField");
@@ -3039,6 +3667,29 @@ function setupEventListeners() {
         });
     }
 
+    // Copy File button
+    if (domElements.copyFileButton) {
+        domElements.copyFileButton.addEventListener('click', async () => {
+            if (!selectedFileForEdit || generatedFiles.length === 0) return;
+
+            const file = generatedFiles.find(f => f.name === selectedFileForEdit);
+            if (!file) return;
+
+            try {
+                await navigator.clipboard.writeText(file.content);
+
+                // Show feedback
+                const originalText = domElements.copyFileButton.textContent;
+                domElements.copyFileButton.textContent = getTranslatedMessage('copyFileSuccess') || '✅ Copied!';
+                setTimeout(() => {
+                    domElements.copyFileButton.textContent = getTranslatedMessage('copyFileButton') || '📋 Copy';
+                }, 1500);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        });
+    }
+
     // Apply Edit button
     if (domElements.applyEditButton) {
         domElements.applyEditButton.addEventListener('click', async () => {
@@ -3166,10 +3817,61 @@ function setupEventListeners() {
         });
     }
 
+    // Preview button
+    if (domElements.previewButton) {
+        domElements.previewButton.addEventListener('click', () => {
+            // Close the More dropdown
+            if (domElements.moreActionsDropdown) domElements.moreActionsDropdown.classList.remove('show');
+            showPreviewModal();
+        });
+    }
+
+    // Close preview modal
+    if (domElements.closePreviewModal) {
+        domElements.closePreviewModal.addEventListener('click', hidePreviewModal);
+    }
+
+    // Close preview modal on backdrop click
+    if (domElements.previewModal) {
+        domElements.previewModal.addEventListener('click', (e) => {
+            if (e.target === domElements.previewModal) {
+                hidePreviewModal();
+            }
+        });
+    }
+
     // Manual code edit toggle
     const toggleEditBtn = document.getElementById('toggle-edit-mode');
     if (toggleEditBtn) {
         toggleEditBtn.addEventListener('click', toggleManualEditMode);
+    }
+
+    // Custom model buttons
+    if (domElements.saveCustomModelButton) {
+        domElements.saveCustomModelButton.addEventListener('click', saveCustomModel);
+    }
+
+    if (domElements.deleteCustomModelButton) {
+        domElements.deleteCustomModelButton.addEventListener('click', deleteCustomModel);
+    }
+
+    // Import Project
+    if (domElements.importProjectButton) {
+        domElements.importProjectButton.addEventListener('click', () => {
+            if (domElements.moreActionsDropdown) domElements.moreActionsDropdown.classList.remove('show');
+            if (domElements.importFileInput) domElements.importFileInput.click();
+        });
+    }
+
+    // Import file selected
+    if (domElements.importFileInput) {
+        domElements.importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                importProject(file);
+                e.target.value = '';
+            }
+        });
     }
 
     updateButtonStates(); // Initial button state update
