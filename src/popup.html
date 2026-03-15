@@ -22,6 +22,20 @@
                     <h1 id="app-title"><span class="brand-name"><span class="brand-gradient">N</span><span class="brand-gray">u</span><span class="brand-gradient">M</span><span class="brand-gray">ode</span><span class="brand-gradient">X</span><span class="brand-gray"> Ext Maker</span></span></h1>
                 </div>
                 <div id="controls">
+                    <!-- Project Picker -->
+                    <div id="project-picker-wrapper">
+                        <select id="project-selector">
+                            <!-- Options populated dynamically -->
+                        </select>
+                        <button id="new-project-button" title="New Project" class="header-icon-btn">+</button>
+                        <div class="project-actions-wrapper">
+                            <button id="project-actions-button" title="Project Actions" class="header-icon-btn">⋯</button>
+                            <div id="project-actions-menu" class="project-actions-dropdown">
+                                <button id="rename-project-button" class="dropdown-option" data-i18n="renameProjectButton">Rename</button>
+                                <button id="delete-project-button" class="dropdown-option project-delete-option" data-i18n="deleteProjectButton">Delete</button>
+                            </div>
+                        </div>
+                    </div>
                     <!-- AI Model Selection Combobox -->
                     <div id="model-selection-container">
                         <div class="combobox-container">
@@ -54,6 +68,7 @@
                         <option value="zh" data-i18n="langChinese">中文</option>
                         <option value="de" data-i18n="langGerman">Deutsch</option>
                         <option value="pt" data-i18n="langPortuguese">Português</option>
+                        <option value="it" data-i18n="langItalian">Italiano</option>
                     </select>
                     <!-- Dark Mode Toggle Button -->
                     <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
@@ -115,6 +130,9 @@
                             <button id="edit-file-button" title="Edit selected file with AI" data-i18n="editFileButton" disabled>
                                 ✏️ Edit File
                             </button>
+                            <button id="copy-file-button" title="Copy file content" data-i18n="copyFileButton" disabled>
+                                📋 Copy
+                            </button>
                             <div class="more-actions-wrapper">
                                 <button id="more-actions-button" title="More actions" data-i18n="moreActionsButton">
                                     ▾ More
@@ -129,6 +147,8 @@
                                     <button id="view-changes-button" class="dropdown-option" title="View diff of last AI edit" data-i18n="viewChangesButton" disabled>
                                         🔍 View Changes
                                     </button>
+                                    <button id="preview-button" class="dropdown-option" data-i18n="previewButton" disabled>👁️ Preview</button>
+                                    <button id="import-project-button" class="dropdown-option" data-i18n="importProjectButton">📥 Import Project</button>
                                 </div>
                             </div>
                         </div>
@@ -181,8 +201,23 @@
                     <label for="api-key-input" data-i18n="apiKeyLabel">API Key:</label>
                     <input type="password" id="api-key-input">
                     <button id="save-api-key-button" data-i18n="saveApiKeyButton">Save Key</button>
+                    <button id="delete-api-key-button" data-i18n="deleteApiKeyButton">Delete Key</button>
                     <p id="api-key-status" class="status-message"></p>
                     <p class="api-key-hint">Your API key is stored locally in your browser  delete or deactivate it when not in use, and never share your device or browser profile.</p>
+                    <hr style="margin: 12px 0; border: none; border-top: 1px solid var(--border-color);">
+                    <h3 data-i18n="customModelSectionTitle" style="font-size: 0.95em; margin-bottom: 8px;">Custom / Local Model</h3>
+                    <p class="api-key-hint" data-i18n="customModelHint">Connect to any local AI server that supports the /v1/chat/completions API.</p>
+                    <label for="custom-endpoint-input" data-i18n="customEndpointLabel">Endpoint URL:</label>
+                    <input type="text" id="custom-endpoint-input" placeholder="http://localhost:1234/v1/chat/completions">
+                    <label for="custom-model-name-input" data-i18n="customModelNameLabel" style="margin-top: 6px;">Model Name:</label>
+                    <input type="text" id="custom-model-name-input" placeholder="e.g., mistral-7b, codellama-34b">
+                    <label for="custom-api-key-input" data-i18n="customApiKeyLabel" style="margin-top: 6px;">API Key (optional):</label>
+                    <input type="password" id="custom-api-key-input" placeholder="Leave blank if not required">
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button id="save-custom-model-button" data-i18n="saveCustomModelButton">Save Custom Model</button>
+                        <button id="delete-custom-model-button" data-i18n="deleteCustomModelButton" class="danger-btn" disabled>Delete Custom Model</button>
+                    </div>
+                    <p id="custom-model-status" class="status-message"></p>
                 </div>
             </div>
 
@@ -201,6 +236,7 @@
                             <option value="zh">中文</option>
                             <option value="de">Deutsch</option>
                             <option value="pt">Português</option>
+                            <option value="it">Italiano</option>
                         </select>
                     </div>
                     <div id="eula-content" class="eula-content"></div>
@@ -264,8 +300,13 @@
                         <div class="help-done">
                             <strong data-i18n="helpDone">Done! Your extension is now installed.</strong>
                         </div>
+
+                        <div class="help-step">
+                            <strong data-i18n="helpShortcutsTitle">⌨️ Keyboard Shortcuts</strong>
+                            <p data-i18n="helpShortcutsText">Ctrl/Cmd+Enter — Build Extension | Shift+Enter — New line in chat | Enter — Send message</p>
+                        </div>
                     </div>
-                    
+
                     <div class="help-footer">
                         <button id="help-close-button" class="help-close-btn" data-i18n="helpCloseButton">Got It!</button>
                     </div>
@@ -287,6 +328,22 @@
                 </div>
             </div>
 
+            <!-- Preview Modal -->
+            <div id="preview-modal" class="modal" style="display: none;">
+                <div class="modal-content preview-modal-content">
+                    <div id="preview-modal-header">
+                        <h2 id="preview-modal-title" data-i18n="previewModalTitle">Visual Preview</h2>
+                        <div id="preview-controls">
+                            <span id="preview-disclaimer" data-i18n="previewDisclaimer">Visual only — Chrome APIs and external resources are not available</span>
+                            <span class="close-button" id="close-preview-modal">&times;</span>
+                        </div>
+                    </div>
+                    <div id="preview-container">
+                        <iframe id="preview-iframe" sandbox="allow-scripts"></iframe>
+                    </div>
+                </div>
+            </div>
+
             <div id="status-bar">
                 <span id="footer-legal-links">
                     <span id="privacy-policy-link" class="footer-link" data-i18n="privacyPolicyLink">Privacy Policy</span>
@@ -299,6 +356,7 @@
         </div>
     </div>
 
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
     <script src="libs/jszip.min.js"></script>
     <script src="libs/dexie.min.js"></script>
     <script src="libs/diff.min.js"></script>
