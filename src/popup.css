@@ -911,6 +911,41 @@ body.dark-mode .llm-message .message-content pre {
     background: rgba(255, 255, 255, 0.2);
 }
 
+#generate-website-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    margin-top: 6px;
+    background: linear-gradient(135deg, var(--dodger-blue), var(--dodger-blue-hover));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#generate-website-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 156, 239, 0.3);
+}
+
+#generate-website-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#generate-website-button .button-icon {
+    width: 20px;
+    height: 20px;
+}
+
 /* Right Pane Section Headers - COMPACT */
 #output-pane-header {
     font-weight: 600;
