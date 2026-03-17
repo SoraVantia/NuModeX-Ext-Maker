@@ -127,9 +127,11 @@
   "customModelMissingFields": { "message": "Insira a URL do endpoint e o nome do modelo." },
   "customModelInvalidUrl": { "message": "Insira uma URL válida." },
   "importProjectButton": { "message": "📥 Importar projeto" },
+  "importFilesButton": { "message": "Importar arquivos" },
   "importSuccess": { "message": "Projeto \"{name}\" importado com sucesso." },
   "importFailed": { "message": "Falha ao importar o projeto." },
   "importInvalidJson": { "message": "Arquivo JSON inválido." },
   "importInvalidFormat": { "message": "Este arquivo não é um projeto válido do NuModeX Ext Maker." },
-  "customModelPermissionDenied": { "message": "Permissão negada. Você deve permitir o acesso a este servidor para usá-lo." }
+  "customModelPermissionDenied": { "message": "Permissão negada. Você deve permitir o acesso a este servidor para usá-lo." },
+  "generateWebsiteButton": { "message": "Construir site" }
 }
