@@ -21,6 +21,7 @@ let selectedModel = null; // Selected AI model
 let currentProjectId = null; // Tracks the active project in IndexedDB
 let selectedFileForEdit = null; // The filename currently selected in the tree
 let isManualEditMode = false;
+let currentBuildMode = 'extension'; // 'extension' or 'website'
 
 // --- Undo System ---
 let undoStack = []; // Array of { files: [...], timestamp: Date }
@@ -168,6 +169,87 @@ function getOnDeviceLanguageInstruction() {
     return `\n\n[Please respond in ${langName}]`;
 }
 
+const WEBSITE_SYSTEM_PROMPT = `You are an expert web developer named NuModeX Ext Maker with 45 years of experience in web development and design, specializing in creating professional static websites using HTML, CSS, and JavaScript.
+Your task is to generate the complete set of files required for a functional static website and return the files in a JSON object with a 'files' array containing objects with 'name' and 'content' properties based on the user's request provided in the preceding conversation history.
+OUTPUT FORMAT:
+You MUST output your response as a single, valid JSON object. This JSON object must have a top-level key named "files".
+The "files" key must contain an array of objects. Each object in this array represents a file and MUST have the following two keys:
+1. "name": A string representing the filename (e.g., "index.html", "styles.css", "script.js").
+   - Include appropriate paths for files in subdirectories (e.g., "assets/style.css").
+2. "content": A string containing the full content of the file.
+   - CSS must be valid CSS (no SCSS, SASS, Less, or preprocessors).
+   - JavaScript must be vanilla ES6+ (no JSX, TypeScript, or npm imports).
+REQUIRED FILES:
+1. index.html: The main HTML entry point.
+   * Use semantic HTML5 (header, nav, main, section, footer).
+   * Include <meta charset="UTF-8"> and <meta name="viewport" content="width=device-width, initial-scale=1.0">.
+   * Include a descriptive <title> tag based on the user's request.
+   * Link to the CSS file(s) in <head> and script file(s) before </body>.
+   * Include a favicon link: <link rel="icon" type="image/png" href="favicon.png">
+2. styles.css: Main stylesheet.
+   * Use CSS custom properties (variables) for colors, spacing, and typography at the :root level.
+   * Include a CSS reset or normalize at the top.
+   * Design mobile-first with min-width media queries for tablet (768px) and desktop (1024px).
+   * Include a basic @media print rule that hides navigation and shows content cleanly.
+   * Style focus states for keyboard navigation (:focus-visible with visible outline).
+   * Ensure color contrast meets WCAG AA minimum (4.5:1 for body text, 3:1 for large text).
+   * NEVER use purple/indigo gradients, bg-indigo-500, or default Tailwind color schemes.
+   * Make it visually professional and distinctive — not generic AI aesthetics.
+3. script.js: JavaScript file (only if interactivity is needed).
+   * Use vanilla ES6+ JavaScript.
+   * Use addEventListener, not inline onclick attributes.
+   * Wrap initialization in DOMContentLoaded listener.
+   * Use const/let, never var.
+4. Additional files as needed by the user's request.
+   * If more than one HTML page is requested, generate separate HTML files with working navigation links between them. Ensure consistent header/footer across pages.
+   * If CSS exceeds 200 lines, consider splitting into base.css and components.css.
+GUIDELINES:
+- Generate all files necessary for the website to work when index.html is opened directly in a browser.
+- Design websites that look visually complete using strong typography, CSS gradients, background patterns, geometric CSS shapes, and color to create visual interest.
+- For logos and hero images, use <img> tags with descriptive src filenames (e.g., "logo.png", "hero-image.png"). Include these files in the JSON output with placeholder content strings like: "This is a placeholder for logo.png. Replace with an actual image file." Do NOT attempt to generate base64 image data or actual binary image content.
+- For decorative icons (navigation arrows, social icons, feature icons), use inline <svg> elements or Unicode symbols — these should be real vector graphics, not placeholders.
+- Do NOT hotlink to Unsplash, Pexels, or any external image service.
+- Include ARIA landmarks and alt attributes for accessibility.
+- If forms are included, use proper <label> elements, style :focus-visible states, and include basic client-side validation.
+- If the request is ambiguous or vague, default to a single-page website with: hero section, features/services grid, about section, and footer with contact info.
+- If the user requests a multi-page site, generate separate HTML files with shared navigation.
+- Do NOT include any explanatory text, apologies, or conversational fluff before or after the JSON object. Your ENTIRE response MUST be ONLY the JSON object.
+Based on the user's entire conversation, generate the files for their requested website.
+REMEMBER: Output ONLY the JSON object. No markdown fences. No text before or after the JSON.`;
+
+const WEBSITE_EDIT_SYSTEM_PROMPT = `You are an expert web developer named NuModeX Ext Maker specializing in editing existing static websites (HTML, CSS, JavaScript).
+The user has an existing website project. They want to make targeted changes — which may affect one file, several files, or the entire project — WITHOUT regenerating everything from scratch. You must read and understand ALL the provided file contents before making changes.
+
+CURRENT PROJECT FILES:
+{FILE_MAP}
+
+FULL FILE CONTENTS:
+{FULL_FILE_CONTENTS}
+
+OUTPUT FORMAT:
+You MUST output your response as a single, valid JSON object with a top-level key named "edits".
+The "edits" key must contain an array of objects. Each object represents a file operation and MUST have:
+1. "action": One of "update", "create", or "delete"
+2. "file": The filename (e.g., "index.html", "styles.css", "script.js")
+3. "content": The COMPLETE new content of the file (required for "update" and "create", omit for "delete")
+
+RULES:
+- READ and UNDERSTAND all provided file contents before making any changes.
+- For "update" actions, return the COMPLETE file content, not just the changed parts.
+- For "create" actions, return the complete content of the new file.
+- Only include files that actually need to change. Do NOT include unchanged files.
+- You MAY update multiple files in a single response if the user's request requires changes across files (e.g., adding a feature that touches HTML, CSS, and JS).
+- If updating index.html, ALWAYS return the complete index.html content.
+- If you create a new JS/CSS file, check if index.html needs to reference it and include an index.html update if so.
+- When modifying code, preserve existing functionality that the user did not ask to change. Do not remove sections, event listeners, or styles unless explicitly asked.
+- Maintain consistent coding style with the existing codebase.
+- Preserve CSS custom properties and the existing variable naming convention.
+- Maintain responsive design — do not break mobile or tablet layouts when editing.
+- Maintain accessibility — do not remove ARIA attributes, alt text, or semantic HTML when editing.
+- CSS must remain valid CSS (no SCSS/SASS/Less). JavaScript must remain vanilla ES6+ (no JSX/TypeScript/npm).
+- Do NOT include any explanatory text. Your ENTIRE response MUST be ONLY the JSON object.
+- No markdown fences. Output raw JSON only.`;
+
 // AI Models Configuration
 const AI_MODELS = [
     // --- Google Gemini ---
@@ -176,28 +258,32 @@ const AI_MODELS = [
         name: 'Gemini 3.1 Pro',
         provider: 'google',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent',
-        model: 'gemini-3.1-pro-preview'
+        model: 'gemini-3.1-pro-preview',
+        maxOutput: 65536
     },
     {
         id: 'gemini-3-flash-preview',
         name: 'Gemini 3 Flash',
         provider: 'google',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent',
-        model: 'gemini-3-flash-preview'
+        model: 'gemini-3-flash-preview',
+        maxOutput: 65536
     },
     {
         id: 'gemini-3.1-flash-lite',
         name: 'Gemini 3.1 Flash Lite',
         provider: 'google',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',
-        model: 'gemini-3.1-flash-lite'
+        model: 'gemini-3.1-flash-lite',
+        maxOutput: 65536
     },
     {
         id: 'gemini-2.5-flash',
         name: 'Gemini 2.5 Flash',
         provider: 'google',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-        model: 'gemini-2.5-flash'
+        model: 'gemini-2.5-flash',
+        maxOutput: 65536
     },
     // --- OpenAI ---
     {
@@ -205,7 +291,8 @@ const AI_MODELS = [
         name: 'GPT-5.4',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-5.4'
+        model: 'gpt-5.4',
+        maxOutput: 128000
     },
     {
         id: 'gpt-5.3-chat-latest',
@@ -213,7 +300,8 @@ const AI_MODELS = [
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-5.3-chat-latest',
-        supportsTemperature: false
+        supportsTemperature: false,
+        maxOutput: 128000
     },
     {
         id: 'gpt-5-mini',
@@ -221,50 +309,57 @@ const AI_MODELS = [
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-5-mini',
-        supportsTemperature: false
+        supportsTemperature: false,
+        maxOutput: 128000
     },
     {
         id: 'gpt-4.1',
         name: 'GPT-4.1',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-4.1'
+        model: 'gpt-4.1',
+        maxOutput: 32768
     },
     {
         id: 'gpt-4.1-mini',
         name: 'GPT-4.1 Mini',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-4.1-mini'
+        model: 'gpt-4.1-mini',
+        maxOutput: 32768
     },
     {
         id: 'gpt-4.1-nano',
         name: 'GPT-4.1 Nano',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-4.1-nano'
+        model: 'gpt-4.1-nano',
+        maxOutput: 32768
     },
     // --- Anthropic Claude ---
     {
-        id: 'claude-opus-4-6-20260205',
+        id: 'claude-opus-4-6',
         name: 'Claude Opus 4.6',
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
-        model: 'claude-opus-4-6-20260205'
+        model: 'claude-opus-4-6',
+        maxOutput: 128000
     },
     {
-        id: 'claude-sonnet-4-6-20260217',
+        id: 'claude-sonnet-4-6',
         name: 'Claude Sonnet 4.6',
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
-        model: 'claude-sonnet-4-6-20260217'
+        model: 'claude-sonnet-4-6',
+        maxOutput: 64000
     },
     {
-        id: 'claude-haiku-4-5-20251001',
+        id: 'claude-haiku-4-5',
         name: 'Claude Haiku 4.5',
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
-        model: 'claude-haiku-4-5-20251001'
+        model: 'claude-haiku-4-5',
+        maxOutput: 8192
     },
     // --- On-device Models ---
     {
@@ -403,6 +498,10 @@ function updateButtonStates() {
         const isOnDevice = selectedModel && selectedModel.onDeviceOnly;
         domElements.generateExtensionButton.disabled = isOnDevice || (!hasConversationHistory && !canSendMessage);
     }
+    if (domElements.generateWebsiteButton) {
+        const isOnDevice = selectedModel && selectedModel.onDeviceOnly;
+        domElements.generateWebsiteButton.disabled = isOnDevice || (!hasConversationHistory && !canSendMessage);
+    }
     if(domElements.downloadZipButton) domElements.downloadZipButton.disabled = generatedFiles.length === 0;
     if(domElements.attachImageButton) domElements.attachImageButton.disabled = !hasApiKey || !hasModel;
 
@@ -426,7 +525,7 @@ function updateButtonStates() {
         domElements.viewChangesButton.disabled = lastEditDiffs.length === 0;
     }
     if (domElements.previewButton) {
-        const hasPopupHtml = generatedFiles.some(f => f.name === 'popup.html');
+        const hasPopupHtml = generatedFiles.some(f => f.name === 'popup.html' || f.name === 'index.html');
         domElements.previewButton.disabled = !hasPopupHtml;
     }
 }
@@ -1016,6 +1115,7 @@ function cacheDomElements() {
         chatInputField: document.getElementById('chat-input-field'),
         sendMessageButton: document.getElementById('send-message-button'),
         generateExtensionButton: document.getElementById('generate-extension-button'),
+        generateWebsiteButton: document.getElementById('generate-website-button'),
         outputPanePlaceholder: document.getElementById('output-pane-placeholder'),
         fileTreeView: document.getElementById('file-tree-view'),
         codeViewer: document.getElementById('code-viewer'),
@@ -1096,6 +1196,10 @@ function cacheDomElements() {
         // Import project elements
         importProjectButton: document.getElementById('import-project-button'),
         importFileInput: document.getElementById('import-file-input'),
+
+        // Import files elements
+        importFilesButton: document.getElementById('import-files-button'),
+        importFilesInput: document.getElementById('import-files-input'),
     };
     console.log("cacheDomElements: Caching complete.");
 }
@@ -1373,6 +1477,15 @@ function loadSelectedModel() {
     });
 }
 
+function getApiKeyStorageName(provider) {
+    switch (provider) {
+        case 'google': return 'googleApiKey';
+        case 'openai': return 'openaiApiKey';
+        case 'anthropic': return 'anthropicApiKey';
+        default: return null;
+    }
+}
+
 function selectModel(model) {
     selectedModel = model;
     chrome.storage.local.set({ selectedAiModel: model.id });
@@ -1393,6 +1506,23 @@ function selectModel(model) {
     }
 
     updateButtonStates();
+
+    // Update API key display for the selected provider (UI only)
+    if (model.provider !== 'on-device' && !model.isCustom) {
+        const keyName = getApiKeyStorageName(model.provider);
+        if (keyName) {
+            chrome.storage.local.get([keyName], (result) => {
+                apiKey = result[keyName] || '';
+                if (domElements.apiKeyInput) {
+                    domElements.apiKeyInput.value = apiKey;
+                }
+                if (domElements.deleteApiKeyButton) {
+                    domElements.deleteApiKeyButton.disabled = !apiKey;
+                }
+                updateButtonStates();
+            });
+        }
+    }
 }
 
 function clearModelSelection() {
@@ -1551,15 +1681,16 @@ function setupCombobox() {
 // --- API Key Management ---
 function loadApiKey() {
     console.log("loadApiKey: Loading API key...");
-    chrome.storage.local.get(['geminiApiKey'], result => {
+    const keyName = getApiKeyStorageName(selectedModel?.provider) || 'googleApiKey';
+    chrome.storage.local.get([keyName], result => {
         if (chrome.runtime.lastError) {
             console.error("loadApiKey: Error loading API key from storage:", chrome.runtime.lastError.message);
             updateStatus("Error loading API key.", 'error', domElements.apiKeyStatus);
             updateButtonStates();
             return;
         }
-        if (result.geminiApiKey) {
-            apiKey = result.geminiApiKey;
+        if (result[keyName]) {
+            apiKey = result[keyName];
             if (domElements.apiKeyInput) domElements.apiKeyInput.value = apiKey;
             updateStatus('apiKeyLoadedFeedback', 'success', domElements.apiKeyStatus);
             console.log("loadApiKey: API key loaded from storage.");
@@ -1590,7 +1721,9 @@ function saveApiKey() {
     const newApiKey = domElements.apiKeyInput.value.trim();
     if (newApiKey) {
         apiKey = newApiKey;
-        chrome.storage.local.set({ geminiApiKey: apiKey }, () => {
+        const saveKeyName = getApiKeyStorageName(selectedModel?.provider);
+        if (!saveKeyName) { updateStatus('Please select a cloud model first.', 'error', domElements.apiKeyStatus); return; }
+        chrome.storage.local.set({ [saveKeyName]: apiKey }, () => {
             if (chrome.runtime.lastError) {
                 console.error("saveApiKey: Error saving API key:", chrome.runtime.lastError.message);
                 updateStatus("Error saving API key.", 'error', domElements.apiKeyStatus);
@@ -1614,7 +1747,8 @@ function saveApiKey() {
         });
     } else {
         apiKey = ''; // Clear the runtime API key
-        chrome.storage.local.remove('geminiApiKey', () => {
+        const clearKeyName = getApiKeyStorageName(selectedModel?.provider);
+        if (clearKeyName) chrome.storage.local.remove(clearKeyName, () => {
             if (chrome.runtime.lastError) console.error("saveApiKey: Error removing API key:", chrome.runtime.lastError.message);
             updateStatus('apiKeyMissing', 'error', domElements.apiKeyStatus); // Show missing in modal
             console.log("saveApiKey: API key cleared from input and storage.");
@@ -1626,7 +1760,9 @@ function saveApiKey() {
 function deleteApiKey() {
     // Clear the stored key
     apiKey = '';
-    chrome.storage.local.remove('geminiApiKey');
+    const keyName = getApiKeyStorageName(selectedModel?.provider);
+    if (!keyName) return;
+    chrome.storage.local.remove(keyName);
 
     // Clear the input field
     if (domElements.apiKeyInput) {
@@ -1773,11 +1909,57 @@ async function handleGenerateExtension() {
         }
 
         // STEP 5: Proceed with generation
+        currentBuildMode = 'extension';
         callAPI(true);
 
     } catch (error) {
         hideLoading();
         console.error('Generation check failed:', error);
+        updateStatus(`Generation failed: ${error.message}`, 'error');
+    }
+}
+
+async function handleGenerateWebsite() {
+    if ((conversationHistory.length === 0 && domElements.chatInputField.value.trim() === '' && attachedFilesData.length === 0)) {
+        updateStatus('errorEmptyPromptGeneric', 'error');
+        return;
+    }
+
+    try {
+        if (!selectedModel) {
+            updateStatus('Please select an AI model', 'error');
+            return;
+        }
+
+        if (selectedModel.onDeviceOnly) {
+            updateStatus(getTranslatedMessage('onDeviceBuildDisabled') || 'On-device models can only be used for chat and editing. Select a cloud model to build.', 'error');
+            return;
+        }
+
+        const eulaValid = await validateEulaForGeneration();
+        if (!eulaValid) return;
+
+        const currentInputText = domElements.chatInputField.value.trim();
+        if (currentInputText || attachedFilesData.length > 0) {
+            const userMessageParts = [];
+            if (currentInputText) userMessageParts.push({ text: currentInputText });
+            attachedFilesData.forEach(file => {
+                userMessageParts.push({ inlineData: { mimeType: file.type, data: file.base64 }});
+            });
+            conversationHistory.push({ role: 'user', parts: userMessageParts });
+            addMessageToChatDOM('user', currentInputText, attachedFilesData.map(f => ({ base64: f.base64, type: f.type, name: f.name })));
+            domElements.chatInputField.value = '';
+            attachedFilesData = [];
+            renderImagePreviews();
+        }
+
+        // Set build mode to website
+        currentBuildMode = 'website';
+        callAPI(true);
+
+    } catch (error) {
+        hideLoading();
+        console.error('Website generation check failed:', error);
         updateStatus(`Generation failed: ${error.message}`, 'error');
     }
 }
@@ -1970,10 +2152,21 @@ function addMessageToChatDOM(sender, text, images = []) {
 
 // --- API Interaction ---
 async function callAPI(isGenerationRequest, systemPromptOverride = null) {
-    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
-        updateStatus('errorApiKeyMissing', 'error');
-        toggleApiKeySection();
-        return;
+    // API key validation is now handled inside each provider's call function.
+    // On-device models don't need a key. Custom models use customApiKey.
+    // Skip the pre-check for on-device and custom models.
+    if (selectedModel && selectedModel.provider !== 'on-device' && !selectedModel.isCustom) {
+        const keyName = getApiKeyStorageName(selectedModel.provider);
+        if (keyName) {
+            const keyResult = await new Promise(resolve => {
+                chrome.storage.local.get([keyName], resolve);
+            });
+            if (!keyResult[keyName]) {
+                updateStatus('errorApiKeyMissing', 'error');
+                toggleApiKeySection();
+                return;
+            }
+        }
     }
 
     if (!selectedModel) {
@@ -2043,7 +2236,16 @@ async function callAPI(isGenerationRequest, systemPromptOverride = null) {
 }
 
 async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
-    const activeSystemPrompt = systemPromptOverride || SYSTEM_PROMPT;
+    // Load API key for Google from storage
+    const keyResult = await new Promise(resolve => {
+        chrome.storage.local.get(['googleApiKey'], resolve);
+    });
+    const currentApiKey = keyResult.googleApiKey || '';
+    if (!currentApiKey) {
+        return { error: 'API key not set. Please save your API key in Settings.' };
+    }
+
+    const activeSystemPrompt = systemPromptOverride || (currentBuildMode === 'website' ? WEBSITE_SYSTEM_PROMPT : SYSTEM_PROMPT);
     let payloadContents = [...conversationHistory];
 
     if (isGenerationRequest) {
@@ -2061,6 +2263,7 @@ async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
         contents: payloadContents,
         generationConfig: {
             temperature: isGenerationRequest ? 0.3 : 0.7,
+            maxOutputTokens: isGenerationRequest ? (selectedModel.maxOutput || 65536) : 8192,
         },
         safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
@@ -2075,7 +2278,7 @@ async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
         body.systemInstruction = { parts: [{ text: activeSystemPrompt }] };
     }
 
-    const response = await fetch(`${selectedModel.endpoint}?key=${apiKey}`, {
+    const response = await fetch(`${selectedModel.endpoint}?key=${currentApiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -2101,7 +2304,21 @@ async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
 }
 
 async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
-    const activeSystemPrompt = systemPromptOverride || SYSTEM_PROMPT;
+    // Load API key — custom models use their own key, cloud models load from storage
+    let currentApiKey = '';
+    if (selectedModel.isCustom) {
+        currentApiKey = selectedModel.customApiKey || '';
+    } else {
+        const keyResult = await new Promise(resolve => {
+            chrome.storage.local.get(['openaiApiKey'], resolve);
+        });
+        currentApiKey = keyResult.openaiApiKey || '';
+        if (!currentApiKey) {
+            return { error: 'API key not set. Please save your API key in Settings.' };
+        }
+    }
+
+    const activeSystemPrompt = systemPromptOverride || (currentBuildMode === 'website' ? WEBSITE_SYSTEM_PROMPT : SYSTEM_PROMPT);
     let messages = conversationHistory.map(msg => {
         const role = msg.role === 'user' ? 'user' : 'assistant';
         const content = msg.parts.map(part => {
@@ -2132,6 +2349,11 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
         messages: messages,
     };
 
+    // Set max_tokens for cloud models only — custom/local models may have lower limits
+    if (!selectedModel.isCustom) {
+        body.max_tokens = isGenerationRequest ? (selectedModel.maxOutput || 32768) : 8192;
+    }
+
     // Only set temperature for models that support it.
     // GPT-5 Mini and GPT-5.3 are reasoning models that reject custom temperature.
     if (selectedModel.supportsTemperature !== false) {
@@ -2150,8 +2372,7 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
         }
     }
 
-    // Use custom API key for custom models, or global API key for cloud models
-    const authKey = selectedModel.isCustom ? selectedModel.customApiKey : apiKey;
+    const authKey = currentApiKey;
     if (authKey) {
         headers['Authorization'] = `Bearer ${authKey}`;
     }
@@ -2177,7 +2398,16 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
 }
 
 async function callClaudeAPI(isGenerationRequest, systemPromptOverride = null) {
-    const activeSystemPrompt = systemPromptOverride || SYSTEM_PROMPT;
+    // Load API key for Anthropic from storage
+    const keyResult = await new Promise(resolve => {
+        chrome.storage.local.get(['anthropicApiKey'], resolve);
+    });
+    const currentApiKey = keyResult.anthropicApiKey || '';
+    if (!currentApiKey) {
+        return { error: 'API key not set. Please save your API key in Settings.' };
+    }
+
+    const activeSystemPrompt = systemPromptOverride || (currentBuildMode === 'website' ? WEBSITE_SYSTEM_PROMPT : SYSTEM_PROMPT);
     let messages = conversationHistory.map(msg => {
         const role = msg.role === 'user' ? 'user' : 'assistant';
         const parts = msg.parts || [];
@@ -2212,7 +2442,7 @@ async function callClaudeAPI(isGenerationRequest, systemPromptOverride = null) {
 
     const body = {
         model: selectedModel.model,
-        max_tokens: 8192,
+        max_tokens: isGenerationRequest ? (selectedModel.maxOutput || 8192) : 8192,
         messages: messages
     };
 
@@ -2227,7 +2457,7 @@ async function callClaudeAPI(isGenerationRequest, systemPromptOverride = null) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'x-api-key': apiKey,
+            'x-api-key': currentApiKey,
             'anthropic-version': '2023-06-01',
             'anthropic-dangerous-direct-browser-access': 'true'
         },
@@ -2568,6 +2798,108 @@ async function importProject(file) {
     }
 }
 
+async function importFiles() {
+    const input = domElements.importFilesInput;
+    if (!input || !input.files || input.files.length === 0) {
+        updateStatus('No files selected.', 'error');
+        return;
+    }
+
+    const allowedExtensions = ['.js', '.css', '.json', '.html', '.htm', '.md', '.txt', '.svg'];
+    const importedFiles = [];
+
+    for (const file of input.files) {
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(ext)) continue;
+        try {
+            const content = await file.text();
+            importedFiles.push({ name: file.name, content });
+        } catch (e) {
+            console.warn('Could not read file:', file.name, e);
+        }
+    }
+
+    // Reset file input so the same files can be re-imported
+    input.value = '';
+
+    if (importedFiles.length === 0) {
+        updateStatus('No valid files selected. Supported: .js, .css, .json, .html, .htm, .md, .txt, .svg', 'error');
+        return;
+    }
+
+    try {
+        if (currentProjectId && generatedFiles.length > 0) {
+            // Merge into existing project
+            let replacedCount = 0;
+            let addedCount = 0;
+
+            for (const imported of importedFiles) {
+                const existingIndex = generatedFiles.findIndex(f => f.name === imported.name);
+                if (existingIndex !== -1) {
+                    generatedFiles[existingIndex].content = imported.content;
+                    replacedCount++;
+                } else {
+                    generatedFiles.push(imported);
+                    addedCount++;
+                }
+            }
+
+            await saveProjectToDb();
+            addMessageToChatDOM('system', `Added ${importedFiles.length} files to current project. ${replacedCount} files replaced, ${addedCount} new files added.`);
+        } else {
+            // Create new project
+            let projectName = 'Imported Extension';
+            const manifestFile = importedFiles.find(f => f.name === 'manifest.json');
+            if (manifestFile) {
+                try {
+                    const manifest = JSON.parse(manifestFile.content);
+                    if (manifest.name) projectName = manifest.name;
+                } catch (e) { /* ignore parse errors */ }
+            }
+
+            // Save current project first
+            if (currentProjectId) {
+                await saveProjectToDb();
+            }
+
+            const now = new Date();
+            const newId = await db.projects.add({
+                name: projectName,
+                files: importedFiles,
+                conversationHistory: [],
+                selectedModelId: selectedModel?.id || null,
+                createdAt: now,
+                updatedAt: now
+            });
+
+            currentProjectId = newId;
+            conversationHistory = [];
+            generatedFiles = importedFiles;
+            attachedFilesData = [];
+            undoStack = [];
+            lastEditDiffs = [];
+            selectedFileForEdit = null;
+            isManualEditMode = false;
+
+            if (domElements.conversationDisplayArea) domElements.conversationDisplayArea.innerHTML = '';
+            if (domElements.chatInputField) domElements.chatInputField.value = '';
+            renderImagePreviews();
+            if (domElements.improvePromptArea) domElements.improvePromptArea.style.display = 'none';
+            if (domElements.editPromptArea) domElements.editPromptArea.style.display = 'none';
+            if (domElements.addFileArea) domElements.addFileArea.style.display = 'none';
+
+            await loadProjectList();
+            addMessageToChatDOM('system', `Imported ${importedFiles.length} files. You can now edit, improve, or add features using AI.`);
+        }
+
+        displayGeneratedFiles(generatedFiles);
+        updateButtonStates();
+    } catch (e) {
+        console.error('Import files error:', e);
+        updateStatus('Failed to import files.', 'error');
+    }
+}
+
 async function loadLastProject() {
     let lastProject = await db.projects.orderBy('updatedAt').reverse().first();
 
@@ -2654,9 +2986,18 @@ function buildSelectiveContext(targetFileName) {
 
 // --- Incremental Edit API Call ---
 async function callEditAPI(targetFileName, userRequest) {
-    if (!apiKey && !(selectedModel && selectedModel.provider === 'on-device') && !(selectedModel && selectedModel.isCustom)) {
-        updateStatus('errorApiKeyMissing', 'error');
-        return;
+    if (selectedModel && selectedModel.provider !== 'on-device' && !selectedModel.isCustom) {
+        const keyName = getApiKeyStorageName(selectedModel.provider);
+        if (keyName) {
+            const keyResult = await new Promise(resolve => {
+                chrome.storage.local.get([keyName], resolve);
+            });
+            if (!keyResult[keyName]) {
+                updateStatus('errorApiKeyMissing', 'error');
+                toggleApiKeySection();
+                return;
+            }
+        }
     }
     if (!selectedModel) {
         updateStatus('Please select an AI model', 'error');
@@ -2671,7 +3012,8 @@ async function callEditAPI(targetFileName, userRequest) {
         ? buildSelectiveContext(targetFileName)
         : buildFullProjectContext();
 
-    const systemPrompt = EDIT_SYSTEM_PROMPT
+    const baseEditPrompt = currentBuildMode === 'website' ? WEBSITE_EDIT_SYSTEM_PROMPT : EDIT_SYSTEM_PROMPT;
+    const systemPrompt = baseEditPrompt
         .replace('{FILE_MAP}', fileMap)
         .replace('{FULL_FILE_CONTENTS}', fileContents);
 
@@ -2868,7 +3210,7 @@ function hideDiffModal() {
 // --- Preview Modal ---
 function buildInlinedPreviewHTML() {
     // Find popup.html in generated files
-    const popupHtml = generatedFiles.find(f => f.name === 'popup.html');
+    const popupHtml = generatedFiles.find(f => f.name === 'popup.html') || generatedFiles.find(f => f.name === 'index.html');
     if (!popupHtml) return null;
 
     let html = popupHtml.content;
@@ -3210,6 +3552,7 @@ function processGenerationResponse(llmResponseText) {
 
                 // Auto-name project based on manifest.json if still "Untitled Project"
                 const currentProject = projectList.find(p => p.id === currentProjectId);
+                let nameFound = false;
                 if (currentProject && currentProject.name === 'Untitled Project') {
                     const manifestFile = generatedFiles.find(f => f.name === 'manifest.json');
                     if (manifestFile) {
@@ -3218,8 +3561,25 @@ function processGenerationResponse(llmResponseText) {
                             if (manifest.name && manifest.name.trim()) {
                                 db.projects.update(currentProjectId, { name: manifest.name.trim(), updatedAt: new Date() });
                                 loadProjectList();
+                                nameFound = true;
                             }
                         } catch (e) { /* ignore parse errors */ }
+                    }
+                }
+
+                // Also check index.html title for website projects
+                if (!nameFound) {
+                    const indexFile = generatedFiles.find(f => f.name === 'index.html');
+                    if (indexFile) {
+                        const titleMatch = indexFile.content.match(/<title>(.*?)<\/title>/i);
+                        if (titleMatch && titleMatch[1] && titleMatch[1].trim()) {
+                            // Update project name from index.html title
+                            const newName = titleMatch[1].trim();
+                            if (currentProjectId) {
+                                db.projects.update(currentProjectId, { name: newName });
+                                loadProjectList();
+                            }
+                        }
                     }
                 }
 
@@ -3586,7 +3946,10 @@ function setupEventListeners() {
 
     if (domElements.chatInputField) {
         domElements.chatInputField.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+                e.preventDefault();
+                handleGenerateWebsite();
+            } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
                 handleGenerateExtension();
             } else if (e.key === 'Enter' && !e.shiftKey) {
@@ -3602,6 +3965,11 @@ function setupEventListeners() {
         domElements.generateExtensionButton.addEventListener('click', handleGenerateExtension);
         console.log("Attached listener to generateExtensionButton");
     } else { console.error("setupEventListeners: domElements.generateExtensionButton is null!"); }
+
+    if (domElements.generateWebsiteButton) {
+        domElements.generateWebsiteButton.addEventListener('click', handleGenerateWebsite);
+        console.log("Attached listener to generateWebsiteButton");
+    }
 
     if (domElements.downloadZipButton) {
         domElements.downloadZipButton.addEventListener('click', downloadAllFilesAsZip);
@@ -3961,6 +4329,19 @@ function setupEventListeners() {
                 e.target.value = '';
             }
         });
+    }
+
+    // Import Files (raw extension files)
+    if (domElements.importFilesButton) {
+        domElements.importFilesButton.addEventListener('click', () => {
+            document.getElementById('import-files-input').click();
+            // Close the More dropdown
+            if (domElements.moreActionsDropdown) domElements.moreActionsDropdown.classList.remove('show');
+        });
+    }
+
+    if (domElements.importFilesInput) {
+        domElements.importFilesInput.addEventListener('change', importFiles);
     }
 
     updateButtonStates(); // Initial button state update
