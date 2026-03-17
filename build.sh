@@ -21,11 +21,18 @@ mkdir -p dist/firefox
 cp -r src/* dist/firefox/
 cp browsers/firefox/manifest.json dist/firefox/
 
+# Whale build
+mkdir -p dist/whale
+cp -r src/* dist/whale/
+cp browsers/whale/manifest.json dist/whale/
+
 # ZIP
 cd dist/chrome && zip -r ../../numodex-ext-maker-chrome.zip . && cd ../..
 cd dist/edge && zip -r ../../numodex-ext-maker-edge.zip . && cd ../..
 cd dist/firefox && zip -r ../../numodex-ext-maker-firefox.zip . && cd ../..
+cd dist/whale && zip -r ../../numodex-ext-maker-whale.zip . && cd ../..
 
 echo "Build complete: numodex-ext-maker-chrome.zip"
 echo "Build complete: numodex-ext-maker-edge.zip"
 echo "Build complete: numodex-ext-maker-firefox.zip"
+echo "Build complete: numodex-ext-maker-whale.zip"
