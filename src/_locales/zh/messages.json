@@ -127,9 +127,11 @@
   "customModelMissingFields": { "message": "请输入端点URL和模型名称。" },
   "customModelInvalidUrl": { "message": "请输入有效的URL。" },
   "importProjectButton": { "message": "📥 导入项目" },
+  "importFilesButton": { "message": "导入文件" },
   "importSuccess": { "message": "项目\u201c{name}\u201d导入成功。" },
   "importFailed": { "message": "项目导入失败。" },
   "importInvalidJson": { "message": "无效的JSON文件。" },
   "importInvalidFormat": { "message": "此文件不是有效的NuModeX Ext Maker项目。" },
-  "customModelPermissionDenied": { "message": "权限被拒绝。您必须允许访问此服务器才能使用它。" }
+  "customModelPermissionDenied": { "message": "权限被拒绝。您必须允许访问此服务器才能使用它。" },
+  "generateWebsiteButton": { "message": "构建网站" }
 }
