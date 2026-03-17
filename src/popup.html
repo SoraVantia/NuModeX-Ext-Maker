@@ -117,6 +117,10 @@
                             <img src="icons/icon128.png" alt="Build Icon" class="button-icon">
                             <span data-i18n="generateButton">Build Extension</span>
                         </button>
+                        <button id="generate-website-button">
+                            <img src="icons/icon128.png" alt="Build Icon" class="button-icon">
+                            <span data-i18n="generateWebsiteButton">Build Website</span>
+                        </button>
                     </div>
                 </div>
 
@@ -149,6 +153,7 @@
                                     </button>
                                     <button id="preview-button" class="dropdown-option" data-i18n="previewButton" disabled>👁️ Preview</button>
                                     <button id="import-project-button" class="dropdown-option" data-i18n="importProjectButton">📥 Import Project</button>
+                                    <button id="import-files-button" class="dropdown-option" data-i18n="importFilesButton">Import Files</button>
                                 </div>
                             </div>
                         </div>
@@ -357,6 +362,7 @@
     </div>
 
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
+    <input type="file" id="import-files-input" accept=".js,.css,.json,.html,.htm,.md,.txt,.svg" multiple style="display: none;">
     <script src="libs/jszip.min.js"></script>
     <script src="libs/dexie.min.js"></script>
     <script src="libs/diff.min.js"></script>
