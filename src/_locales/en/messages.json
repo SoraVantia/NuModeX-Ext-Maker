@@ -130,5 +130,6 @@
   "importSuccess": { "message": "Project \"{name}\" imported successfully." },
   "importFailed": { "message": "Failed to import project." },
   "importInvalidJson": { "message": "Invalid JSON file." },
-  "importInvalidFormat": { "message": "This file is not a valid NuModeX Ext Maker project." }
+  "importInvalidFormat": { "message": "This file is not a valid NuModeX Ext Maker project." },
+  "customModelPermissionDenied": { "message": "Permission denied. You must allow access to this server to use it." }
 }
