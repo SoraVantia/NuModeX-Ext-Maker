@@ -19,6 +19,11 @@
     "http://127.0.0.1/*"
   ],
 
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -35,6 +40,6 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://generativelanguage.googleapis.com https://api.openai.com https://api.anthropic.com;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https: https://generativelanguage.googleapis.com https://api.openai.com https://api.anthropic.com http://localhost:* http://127.0.0.1:*;"
   }
 }
