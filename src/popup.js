@@ -130,6 +130,44 @@ RULES:
 - Do NOT include any explanatory text, apologies, or conversational fluff. Your ENTIRE response MUST be ONLY the JSON object.
 - No markdown fences. Output raw JSON only.`;
 
+/**
+ * Get language instruction for cloud and custom models.
+ * Supports all 9 UI languages.
+ * @returns {string} Language instruction to append to chat messages.
+ */
+function getLanguageInstruction() {
+    const langMap = {
+        'en': 'English',
+        'ja': 'Japanese',
+        'es': 'Spanish',
+        'fr': 'French',
+        'ko': 'Korean',
+        'zh': 'Chinese',
+        'de': 'German',
+        'pt': 'Portuguese',
+        'it': 'Italian'
+    };
+    const langName = langMap[currentLang] || 'English';
+    return `\n\n[Please respond in ${langName}]`;
+}
+
+/**
+ * Get language instruction for on-device models (Gemini Nano, Phi-4 Mini).
+ * Limited to languages these models handle reliably.
+ * Returns empty string for unsupported languages (model defaults to English).
+ * @returns {string} Language instruction or empty string.
+ */
+function getOnDeviceLanguageInstruction() {
+    const supportedLangs = {
+        'en': 'English',
+        'es': 'Spanish',
+        'ja': 'Japanese'
+    };
+    const langName = supportedLangs[currentLang];
+    if (!langName || currentLang === 'en') return '';
+    return `\n\n[Please respond in ${langName}]`;
+}
+
 // AI Models Configuration
 const AI_MODELS = [
     // --- Google Gemini ---
@@ -1093,7 +1131,7 @@ async function loadCustomModel() {
     });
 }
 
-function saveCustomModel() {
+async function saveCustomModel() {
     const endpoint = domElements.customEndpointInput?.value.trim();
     const modelName = domElements.customModelNameInput?.value.trim();
     const customApiKey = domElements.customApiKeyInput?.value.trim();
@@ -1108,6 +1146,13 @@ function saveCustomModel() {
         new URL(endpoint);
     } catch (e) {
         updateStatus(getTranslatedMessage('customModelInvalidUrl') || 'Please enter a valid URL.', 'error', domElements.customModelStatus);
+        return;
+    }
+
+    // Request host permission for remote endpoints
+    const hasPermission = await requestHostPermissionIfNeeded(endpoint);
+    if (!hasPermission) {
+        updateStatus(getTranslatedMessage('customModelPermissionDenied') || 'Permission denied. You must allow access to this server to use it.', 'error', domElements.customModelStatus);
         return;
     }
 
@@ -1166,6 +1211,31 @@ function deleteCustomModel() {
             if (domElements.customModelStatus) updateStatus('', 'info', domElements.customModelStatus);
         }, 2000);
     });
+}
+
+async function requestHostPermissionIfNeeded(endpoint) {
+    try {
+        const url = new URL(endpoint);
+
+        // Localhost doesn't need optional permissions — already in host_permissions
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+            return true;
+        }
+
+        // Check if we already have permission
+        const origin = url.origin + '/*';
+        const hasPermission = await chrome.permissions.contains({ origins: [origin] });
+        if (hasPermission) {
+            return true;
+        }
+
+        // Request permission from user — Chrome shows native prompt
+        const granted = await chrome.permissions.request({ origins: [origin] });
+        return granted;
+    } catch (e) {
+        console.error('Permission request error:', e);
+        return false;
+    }
 }
 
 // --- I18n ---
@@ -1628,6 +1698,17 @@ function handleSendMessage() {
         userMessageParts.push({ inlineData: { mimeType: file.type, data: file.base64 }});
     });
 
+    // Append language instruction for chat messages
+    const isOnDevice = selectedModel && selectedModel.provider === 'on-device';
+    const langInstruction = isOnDevice ? getOnDeviceLanguageInstruction() : getLanguageInstruction();
+    if (langInstruction) {
+        // Find the text part and append the instruction
+        const textPart = userMessageParts.find(p => p.text);
+        if (textPart) {
+            textPart.text += langInstruction;
+        }
+    }
+
     conversationHistory.push({ role: 'user', parts: userMessageParts });
     addMessageToChatDOM('user', text, attachedFilesData.map(f => ({ base64: f.base64, type: f.type, name: f.name })));
 
@@ -2060,6 +2141,14 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
     const headers = {
         'Content-Type': 'application/json'
     };
+
+    // For custom remote endpoints, verify we still have permission
+    if (selectedModel.isCustom) {
+        const hasPermission = await requestHostPermissionIfNeeded(selectedModel.endpoint);
+        if (!hasPermission) {
+            return { error: getTranslatedMessage('customModelPermissionDenied') || 'Permission denied for this endpoint. Please reconfigure in Settings.' };
+        }
+    }
 
     // Use custom API key for custom models, or global API key for cloud models
     const authKey = selectedModel.isCustom ? selectedModel.customApiKey : apiKey;
