@@ -130,5 +130,6 @@
   "importSuccess": { "message": "Projekt \"{name}\" erfolgreich importiert." },
   "importFailed": { "message": "Projekt konnte nicht importiert werden." },
   "importInvalidJson": { "message": "Ungültige JSON-Datei." },
-  "importInvalidFormat": { "message": "Diese Datei ist kein gültiges NuModeX Ext Maker-Projekt." }
+  "importInvalidFormat": { "message": "Diese Datei ist kein gültiges NuModeX Ext Maker-Projekt." },
+  "customModelPermissionDenied": { "message": "Zugriff verweigert. Sie müssen den Zugriff auf diesen Server erlauben, um ihn zu verwenden." }
 }
