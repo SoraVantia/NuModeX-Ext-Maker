@@ -1,7 +1,6 @@
 #!/bin/bash
 # Copyright 2026 SoraVantia GK. All rights reserved.
-# Dual-licensed under the Apache License 2.0 and the Marketplace Publication License.
-# See LICENSE and LICENSE-MARKETPLACE for details.
+# Licensed under the Business Source License 1.1. See LICENSE for details.
 
 # Clean
 rm -rf dist/
