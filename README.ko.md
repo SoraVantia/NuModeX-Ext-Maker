@@ -129,6 +129,7 @@ NuModeX Ext Maker는 소스 공개이며 Business Source License 1.1(BSL 1.1)에
 ## 법적 사항
 
 NuModeX Ext Maker를 설치하거나 사용함으로써 [최종 사용자 라이선스 계약](eula-ko-v2.5.md) 및 [개인정보 보호정책](privacy-policy-ko-v2.5.md)에 동의하는 것으로 간주됩니다.
+본 프로젝트는 현재 풀 리퀘스트를 받지 않습니다. 버그 보고 및 기능 요청에는 Issues를 사용해 주세요. 이는 향후 변경될 수 있습니다.
 
 ## 제3자 관련 통지
 
