@@ -129,6 +129,7 @@ Para una Licencia de Marketplace o consultas comerciales, contacta: numodex@sora
 ## Legal
 
 Al instalar o usar NuModeX Ext Maker, aceptas el [Acuerdo de Licencia de Usuario Final](eula-es-v2.5.md) y la [Politica de Privacidad](privacy-policy-es-v2.5.md).
+Este proyecto no acepta pull requests en este momento. Utilice Issues para reportar errores y solicitar funciones. Esto puede cambiar en el futuro.
 
 ## Avisos de Terceros
 
