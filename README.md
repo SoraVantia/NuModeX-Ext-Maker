@@ -129,6 +129,7 @@ For a Marketplace License or for business inquiries, contact: numodex@soravantia
 ## Legal
 
 By installing or using NuModeX Ext Maker, you agree to the [End User License Agreement](eula-en-v2.5.md) and [Privacy Policy](privacy-policy-en-v2.5.md).
+This project does not accept pull requests at this time. Please use Issues to report bugs and request features. This may change in the future.
 
 ## Third-Party Notices
 
