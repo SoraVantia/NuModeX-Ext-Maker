@@ -1,0 +1,104 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please fill out the information below to help us investigate.
+  - type: checkboxes
+    id: help-section
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have checked the in-app Help Guide (? icon in the top bar)
+          required: true
+        - label: I have searched existing issues to make sure this is not a duplicate
+          required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser version
+      placeholder: "e.g., 146.0.7680.164, 146.0.3856.72, 149.0"
+    validations:
+      required: false
+  - type: dropdown
+    id: ai-model-type
+    attributes:
+      label: AI model type
+      description: What type of AI model were you using when the issue occurred?
+      options:
+        - Cloud AI
+        - On-device AI (browser-provided)
+        - Custom model (local server)
+        - Custom model (remote server)
+        - Not related to AI models
+    validations:
+      required: true
+  - type: input
+    id: ai-model-name
+    attributes:
+      label: Which AI provider and model?
+      description: Enter the provider and model name you were using.
+      placeholder: "Enter the provider name and model name"
+    validations:
+      required: false
+  - type: dropdown
+    id: feature-area
+    attributes:
+      label: What were you doing?
+      options:
+        - Building an extension
+        - Building a website
+        - Editing a file
+        - Improving an extension
+        - Chatting with AI
+        - Downloading ZIP
+        - Importing files
+        - Changing settings
+        - Accepting Terms of Service
+        - Switching projects
+        - Using live preview
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      placeholder: Describe the bug. What did you expect to happen vs what actually happened?
+    validations:
+      required: true
+  - type: checkboxes
+    id: troubleshooting
+    attributes:
+      label: Troubleshooting steps tried
+      options:
+        - label: I tried simplifying my prompt
+        - label: I tried building with a different AI model
+        - label: I tried making small incremental changes instead of one large prompt
+        - label: I tried starting a new project
+        - label: I cleared my API key and re-entered it
+        - label: I checked my AI provider's status page to confirm their servers are not down
+        - label: I updated my browser to the latest version
+        - label: If using a custom model, I verified my endpoint URL is correct and supports the /v1/chat/completions API format
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Error message (if any)
+      description: Copy and paste any error messages you saw, or open browser DevTools (F12) → Console and paste errors from there.
+      render: shell
+    validations:
+      required: false
