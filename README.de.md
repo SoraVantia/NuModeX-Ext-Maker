@@ -129,6 +129,7 @@ Für eine Marktplatz-Lizenz oder geschäftliche Anfragen kontaktieren Sie: numod
 ## Rechtliches
 
 Durch die Installation oder Nutzung von NuModeX Ext Maker stimmen Sie der [Endbenutzer-Lizenzvereinbarung](eula-de-v2.5.md) und der [Datenschutzrichtlinie](privacy-policy-de-v2.5.md) zu.
+Dieses Projekt nimmt derzeit keine Pull Requests an. Bitte verwenden Sie Issues, um Fehler zu melden und Funktionen anzufordern. Dies kann sich in Zukunft andern.
 
 ## Drittanbieter-Hinweise
 
