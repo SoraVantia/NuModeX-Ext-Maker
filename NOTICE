@@ -1,0 +1,37 @@
+NuModeX Ext Maker
+Copyright 2026 SoraVantia GK. All rights reserved.
+
+This product includes software developed by SoraVantia GK.
+
+Product website: https://numodex.com/numodexextmaker
+
+This software is licensed under the Business Source License 1.1.
+See LICENSE for full terms.
+
+"SoraVantia," "NuModeX," "NuModeX Ext Maker," and the NuModeX logo are
+trademarks of SoraVantia GK and are not licensed under the
+Business Source License 1.1. Use of these trademarks requires prior
+written permission from SoraVantia GK.
+
+Third-Party Attributions
+
+This product includes the following third-party software:
+
+  Dexie.js - Copyright (c) 2014-2017 David Fahlander
+  Licensed under the Apache License, Version 2.0
+
+  JSZip - Copyright (c) 2009-2016 Stuart Knightley
+  Licensed under the MIT License
+
+  pako - Copyright (C) 2014-2017 Vitaly Puzrin and Andrei Tuputcyn
+  Licensed under the MIT License and Zlib License
+
+  jsdiff - Copyright (c) 2009-present Kevin Decker
+  Licensed under the BSD 3-Clause License
+
+  diff2html - Copyright (c) 2014-present Rodrigo Fernandes
+  Licensed under the MIT License
+
+See THIRD-PARTY-LICENSES for full license texts.
+
+For licensing inquiries: numodex@soravantia.com
