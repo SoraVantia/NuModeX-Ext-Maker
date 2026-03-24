@@ -1,0 +1,37 @@
+name: Question
+description: Ask a question about using NuModeX Ext Maker
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: checkboxes
+    id: help-section
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have checked the in-app Help Guide (? icon in the top bar)
+          required: true
+        - label: I have checked the README
+          required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - API keys and setup
+        - AI model selection
+        - Building extensions
+        - Building websites
+        - Editing and improving
+        - Custom model configuration
+        - On-device AI
+        - Downloading and installing
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      placeholder: What would you like to know?
+    validations:
+      required: true
