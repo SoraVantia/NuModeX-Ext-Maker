@@ -77,6 +77,32 @@ graph LR
 
 > **その他のブラウザ：** 生成された拡張機能はManifest V3で、Edge、Brave、Whale、その他のChromiumベースのブラウザと互換性があります。サイドロードの手順はブラウザによって異なります。
 
+## オンデバイスAIのセットアップ
+
+オンデバイスモデルはAPIキーやクラウド接続なしで、完全にお使いのハードウェア上で動作します。**これらのモデルは特定のブラウザでのみ利用可能です:** Google ChromeではGemini Nano、Microsoft EdgeではPhi-4 Mini。その他のChromiumベースのブラウザ（Brave、Whaleなど）やFirefoxは、現在ブラウザAPIを通じたオンデバイスAIをサポートしていません。
+
+**Chrome - Gemini Nano:**
+1. Chromeバージョン127以上を使用（DevまたはCanaryを推奨）。
+2. `chrome://flags/#optimization-guide-on-device-model` にアクセスし、**Enabled BypassPerfRequirement** に設定。
+3. `chrome://flags/#prompt-api-for-gemini-nano` にアクセスし、**Enabled** に設定。
+4. Chromeを再起動。
+5. `chrome://on-device-internals` にアクセスしてモデルのステータスを確認。モデルがダウンロードされていない場合は、`chrome://components/` にアクセスし、**Optimization Guide On Device Model** を見つけて **Check for update** をクリック。
+6. モデルのダウンロードを待つ。数分かかる場合があります。ダウンロード中はChromeを開いたままにしてください。
+
+**Edge - Phi-4 Mini:**
+1. Edge DevまたはCanary（バージョン138以上）を使用。Edge 139以降ではPhi-4 Miniがデフォルトで含まれています。
+2. `edge://flags/` にアクセスし、**Prompt API for Phi mini** を検索して **Enabled** に設定。
+3. オプションで **Enable on device AI model debug logs** を有効にしてトラブルシューティングに役立てる。
+4. Edgeを再起動。
+5. `edge://on-device-internals` にアクセスし、**Device performance class** が **High** 以上であることを確認。
+6. モデルは初回使用時に自動的にダウンロードされます。数分かかる場合があります。ダウンロード中はEdgeを開いたままにしてください。
+
+**Edgeのハードウェア要件:** Windows 10/11またはmacOS 13.3以降、20 GB以上の空き容量、5.5 GB以上のVRAM、従量制でないインターネット接続。
+
+**Chromeのハードウェア要件:** 22 GBの空き容量、4 GB超のVRAM（GPU）または16 GB以上のRAMと4コア以上のCPU（CPUモード）、従量制でない接続。
+
+> **注意:** オンデバイスモデルはチャットとファイル編集にのみ使用できます。拡張機能やウェブサイトの完全なビルドにはクラウドモデルを選択してください。
+
 ## より良い結果のためのヒント
 
 - シンプルな説明から始めて徐々に構築。まずコア機能を説明し、その後「編集」と「改善」を使って段階的に機能を追加。
