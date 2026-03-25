@@ -65,55 +65,12 @@ graph LR
 
 ## Primeiros Passos
 
-1. Instale a extensao a partir da Chrome Web Store (ou carregue desempacotada no modo de programador).
-2. Clique em Definicoes e introduza a sua chave API do seu fornecedor na nuvem. A chave de cada fornecedor e guardada separadamente - mude de modelo livremente.
-3. Selecione um modelo de IA no menu suspenso.
-4. Aceite os Termos de Servico (apenas na primeira vez).
-5. Descreva o que pretende construir no chat.
-6. Clique em "Construir Extensao" ou "Construir Site" e aguarde a geracao.
-7. Reveja e edite os ficheiros gerados conforme necessario usando as ferramentas de edicao integradas.
-8. Clique em "Descarregar tudo como ZIP".
-9. Para extensoes: Extraia o ZIP, va a `chrome://extensions`, ative o modo de programador e clique em "Carregar extensao descompactada". Para sites: Extraia e abra `index.html` no seu navegador.
+1. Aceite os Termos de Servico (primeiro lancamento).
+2. Introduza a sua chave API do seu fornecedor de IA na nuvem nas Definicoes.
+3. Selecione um modelo, descreva o que pretende e clique em "Construir Extensao" ou "Construir Site".
+4. Descarregue os ficheiros gerados como ZIP e carregue-os no seu navegador.
 
-> **Outros navegadores:** As extensoes geradas sao Manifest V3 e compativeis com Edge, Brave, Whale e outros navegadores baseados em Chromium. Os passos de carregamento lateral variam consoante o navegador.
-
-## Configuracao de IA no Dispositivo
-
-Os modelos no dispositivo funcionam inteiramente no seu hardware sem necessidade de chave API ou conexao a nuvem. **Estes modelos so estao disponiveis em navegadores especificos:** Gemini Nano no Google Chrome e Phi-4 Mini no Microsoft Edge. Outros navegadores baseados em Chromium (Brave, Whale, etc.) e Firefox nao suportam atualmente IA no dispositivo atraves de APIs do navegador.
-
-**Chrome - Gemini Nano:**
-1. Use Chrome versao 127 ou superior (Dev ou Canary recomendado para melhores resultados).
-2. Va a `chrome://flags/#optimization-guide-on-device-model` e configure como **Enabled BypassPerfRequirement**.
-3. Va a `chrome://flags/#prompt-api-for-gemini-nano` e configure como **Enabled**.
-4. Reinicie o Chrome.
-5. Va a `chrome://on-device-internals` e verifique o estado do modelo. Se o modelo nao estiver descarregado, va a `chrome://components/`, encontre **Optimization Guide On Device Model** e clique em **Check for update**.
-6. Aguarde o download do modelo. Pode demorar varios minutos. Mantenha o Chrome aberto durante o download.
-
-**Edge - Phi-4 Mini:**
-1. Use Edge Dev ou Canary (versao 138+). Edge 139+ inclui Phi-4 Mini por defeito.
-2. Va a `edge://flags/` e procure **Prompt API for Phi mini**, configure como **Enabled**.
-3. Opcionalmente, ative **Enable on device AI model debug logs** para resolucao de problemas.
-4. Reinicie o Edge.
-5. Va a `edge://on-device-internals` e verifique se a sua **Device performance class** e **High** ou superior.
-6. O modelo e descarregado automaticamente na primeira utilizacao. Pode demorar varios minutos. Mantenha o Edge aberto durante o download.
-
-**Requisitos de hardware para Edge:** Windows 10/11 ou macOS 13.3+, pelo menos 20 GB de espaco livre, 5,5 GB+ de VRAM e uma ligacao a internet sem limite de dados.
-
-**Requisitos de hardware para Chrome:** 22 GB de espaco livre, mais de 4 GB de VRAM (GPU) ou 16 GB+ de RAM com 4+ nucleos de CPU (modo CPU) e uma ligacao sem limite de dados.
-
-> **Nota:** Os modelos no dispositivo so podem ser usados para chat e edicao de ficheiros. Para construir extensoes ou sites completos, selecione um modelo na nuvem.
-
-## Dicas para Melhores Resultados
-
-- Comece com uma descricao simples e va construindo. Descreva primeiro a funcionalidade principal, depois use Editar e Melhorar para adicionar mais funcionalidades de forma incremental.
-- Use um modelo com uma janela de contexto maior para projetos complexos. Modelos maiores lidam melhor com resultados maiores do que modelos menores.
-- Se vir "Nao foi possivel extrair os ficheiros da extensao", o prompt era demasiado complexo para uma geracao. Simplifique o prompt inicial e adicione funcionalidades atraves da edicao.
-- Se vir um erro de analise JSON, a resposta do modelo era demasiado longa e foi cortada. Tente um prompt mais simples ou mude para um modelo com um limite de saida maior.
-- Modelos na nuvem, personalizados e remotos podem todos ser usados para construir, editar e conversar. Escolha o modelo que melhor se adapta as suas necessidades e orcamento.
-- Modelos no dispositivo funcionam para chat e edicao mas nao conseguem construir extensoes ou sites completos. Use um modelo na nuvem ou personalizado para construir.
-- Enter para enviar uma mensagem de chat. Shift+Enter para nova linha. Ctrl/Cmd+Enter para construir uma extensao. Ctrl/Cmd+Shift+Enter para construir um site.
-- Apos construir, use Editar Ficheiro para alteracoes num unico ficheiro e Melhorar Extensao para alteracoes em multiplos ficheiros.
-- Importe ficheiros existentes via Mais (▾) → Importar Ficheiros para os editar com IA.
+Para instrucoes detalhadas de configuracao, configuracao de IA no dispositivo, resolucao de problemas e dicas, consulte o [Guia de Inicio](getting-started-pt-3-26-2026.md).
 
 ## Chaves API
 
