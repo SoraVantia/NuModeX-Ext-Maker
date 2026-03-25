@@ -77,6 +77,32 @@ graph LR
 
 > **Outros navegadores:** As extensoes geradas sao Manifest V3 e compativeis com Edge, Brave, Whale e outros navegadores baseados em Chromium. Os passos de carregamento lateral variam consoante o navegador.
 
+## Configuracao de IA no Dispositivo
+
+Os modelos no dispositivo funcionam inteiramente no seu hardware sem necessidade de chave API ou conexao a nuvem. **Estes modelos so estao disponiveis em navegadores especificos:** Gemini Nano no Google Chrome e Phi-4 Mini no Microsoft Edge. Outros navegadores baseados em Chromium (Brave, Whale, etc.) e Firefox nao suportam atualmente IA no dispositivo atraves de APIs do navegador.
+
+**Chrome - Gemini Nano:**
+1. Use Chrome versao 127 ou superior (Dev ou Canary recomendado para melhores resultados).
+2. Va a `chrome://flags/#optimization-guide-on-device-model` e configure como **Enabled BypassPerfRequirement**.
+3. Va a `chrome://flags/#prompt-api-for-gemini-nano` e configure como **Enabled**.
+4. Reinicie o Chrome.
+5. Va a `chrome://on-device-internals` e verifique o estado do modelo. Se o modelo nao estiver descarregado, va a `chrome://components/`, encontre **Optimization Guide On Device Model** e clique em **Check for update**.
+6. Aguarde o download do modelo. Pode demorar varios minutos. Mantenha o Chrome aberto durante o download.
+
+**Edge - Phi-4 Mini:**
+1. Use Edge Dev ou Canary (versao 138+). Edge 139+ inclui Phi-4 Mini por defeito.
+2. Va a `edge://flags/` e procure **Prompt API for Phi mini**, configure como **Enabled**.
+3. Opcionalmente, ative **Enable on device AI model debug logs** para resolucao de problemas.
+4. Reinicie o Edge.
+5. Va a `edge://on-device-internals` e verifique se a sua **Device performance class** e **High** ou superior.
+6. O modelo e descarregado automaticamente na primeira utilizacao. Pode demorar varios minutos. Mantenha o Edge aberto durante o download.
+
+**Requisitos de hardware para Edge:** Windows 10/11 ou macOS 13.3+, pelo menos 20 GB de espaco livre, 5,5 GB+ de VRAM e uma ligacao a internet sem limite de dados.
+
+**Requisitos de hardware para Chrome:** 22 GB de espaco livre, mais de 4 GB de VRAM (GPU) ou 16 GB+ de RAM com 4+ nucleos de CPU (modo CPU) e uma ligacao sem limite de dados.
+
+> **Nota:** Os modelos no dispositivo so podem ser usados para chat e edicao de ficheiros. Para construir extensoes ou sites completos, selecione um modelo na nuvem.
+
 ## Dicas para Melhores Resultados
 
 - Comece com uma descricao simples e va construindo. Descreva primeiro a funcionalidade principal, depois use Editar e Melhorar para adicionar mais funcionalidades de forma incremental.
