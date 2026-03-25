@@ -77,6 +77,32 @@ graph LR
 
 > **Altri browser:** Le estensioni generate sono Manifest V3 e compatibili con Edge, Brave, Whale e altri browser basati su Chromium. I passaggi per il caricamento laterale variano in base al browser.
 
+## Configurazione dell'IA su Dispositivo
+
+I modelli su dispositivo funzionano interamente sul tuo hardware senza bisogno di chiave API o connessione cloud. **Questi modelli sono disponibili solo in browser specifici:** Gemini Nano in Google Chrome e Phi-4 Mini in Microsoft Edge. Altri browser basati su Chromium (Brave, Whale, ecc.) e Firefox non supportano attualmente l'IA su dispositivo tramite le API del browser.
+
+**Chrome - Gemini Nano:**
+1. Usa Chrome versione 127 o superiore (Dev o Canary consigliato per i migliori risultati).
+2. Vai a `chrome://flags/#optimization-guide-on-device-model` e imposta su **Enabled BypassPerfRequirement**.
+3. Vai a `chrome://flags/#prompt-api-for-gemini-nano` e imposta su **Enabled**.
+4. Riavvia Chrome.
+5. Vai a `chrome://on-device-internals` e verifica lo stato del modello. Se il modello non e scaricato, vai a `chrome://components/`, trova **Optimization Guide On Device Model** e clicca su **Check for update**.
+6. Attendi il download del modello. Potrebbe richiedere diversi minuti. Mantieni Chrome aperto durante il download.
+
+**Edge - Phi-4 Mini:**
+1. Usa Edge Dev o Canary (versione 138+). Edge 139+ include Phi-4 Mini per impostazione predefinita.
+2. Vai a `edge://flags/` e cerca **Prompt API for Phi mini**, imposta su **Enabled**.
+3. Facoltativamente, attiva **Enable on device AI model debug logs** per la risoluzione dei problemi.
+4. Riavvia Edge.
+5. Vai a `edge://on-device-internals` e verifica che la tua **Device performance class** sia **High** o superiore.
+6. Il modello viene scaricato automaticamente al primo utilizzo. Potrebbe richiedere diversi minuti. Mantieni Edge aperto durante il download.
+
+**Requisiti hardware per Edge:** Windows 10/11 o macOS 13.3+, almeno 20 GB di spazio libero, 5,5 GB+ di VRAM e una connessione internet non a consumo.
+
+**Requisiti hardware per Chrome:** 22 GB di spazio libero, piu di 4 GB di VRAM (GPU) o 16 GB+ di RAM con 4+ core CPU (modalita CPU) e una connessione non a consumo.
+
+> **Nota:** I modelli su dispositivo possono essere usati solo per la chat e la modifica dei file. Per costruire estensioni o siti web completi, seleziona un modello cloud.
+
 ## Consigli per i Migliori Risultati
 
 - Inizia con una descrizione semplice e costruisci gradualmente. Descrivi prima la funzionalita principale, poi usa Modifica e Migliora per aggiungere piu funzionalita in modo incrementale.
