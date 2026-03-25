@@ -77,6 +77,32 @@ graph LR
 
 > **Other browsers:** Generated extensions are Manifest V3 and compatible with Edge, Brave, Whale, and other Chromium-based browsers. Sideloading steps vary by browser.
 
+## On-Device AI Setup
+
+On-device models run entirely on your hardware with no API key or cloud connection needed. **These models are only available in specific browsers:** Gemini Nano in Google Chrome and Phi-4 Mini in Microsoft Edge. Other Chromium-based browsers (Brave, Whale, etc.) and Firefox do not currently support on-device AI through browser APIs.
+
+**Chrome - Gemini Nano:**
+1. Use Chrome version 127 or higher (Dev or Canary recommended for best results).
+2. Go to `chrome://flags/#optimization-guide-on-device-model` and set to **Enabled BypassPerfRequirement**.
+3. Go to `chrome://flags/#prompt-api-for-gemini-nano` and set to **Enabled**.
+4. Restart Chrome.
+5. Go to `chrome://on-device-internals` and verify the model status. If the model is not downloaded, go to `chrome://components/`, find **Optimization Guide On Device Model** and click **Check for update**.
+6. Wait for the model to download. This may take several minutes. Keep Chrome open during the download.
+
+**Edge - Phi-4 Mini:**
+1. Use Edge Dev or Canary (version 138+). Edge 139+ includes Phi-4 Mini by default.
+2. Go to `edge://flags/` and search for **Prompt API for Phi mini**, set to **Enabled**.
+3. Optionally enable **Enable on device AI model debug logs** for troubleshooting.
+4. Restart Edge.
+5. Go to `edge://on-device-internals` and verify your **Device performance class** is **High** or greater.
+6. The model downloads automatically on first use. This may take several minutes. Keep Edge open during the download.
+
+**Hardware requirements for Edge:** Windows 10/11 or macOS 13.3+, at least 20 GB free storage, 5.5 GB+ VRAM, and an unmetered internet connection.
+
+**Hardware requirements for Chrome:** 22 GB free storage, more than 4 GB VRAM (GPU) or 16 GB+ RAM with 4+ CPU cores (CPU mode), and an unmetered connection.
+
+> **Note:** On-device models can only be used for chat and file editing. To build full extensions or websites, select a cloud model.
+
 ## Tips for Best Results
 
 - Start with a simple description and build up. Describe the core feature first, then use Edit and Improve to add more features incrementally.
