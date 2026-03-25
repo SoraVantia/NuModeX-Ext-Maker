@@ -43,13 +43,13 @@ Un constructeur d'extensions de navigateur Manifest V3 et de sites web statiques
 
 ```mermaid
 graph LR
-    A[Your Browser] --> B[NuModeX Ext Maker]
-    B --> C[Local Storage<br/>IndexedDB + Extension Storage]
-    B --> D[Sandboxed Preview<br/>iframe]
-    B --> E[Cloud AI Providers<br/>Your API Key]
-    B --> F[On-Device AI<br/>Processed on Your Device]
-    B --> G[Custom Local Server<br/>Your Configured Endpoint]
-    B --> H[Custom Remote Server<br/>Your Configured Endpoint]
+    A[Votre Navigateur] --> B[NuModeX Ext Maker]
+    B --> C[Stockage Local<br/>IndexedDB + Stockage d'Extension]
+    B --> D[Apercu en Sandbox<br/>iframe]
+    B --> E[Fournisseurs d'IA Cloud<br/>Votre Cle API]
+    B --> F[IA Embarquee<br/>Traite sur Votre Appareil]
+    B --> G[Serveur Local Personnalise<br/>Votre Endpoint Configure]
+    B --> H[Serveur Distant Personnalise<br/>Votre Endpoint Configure]
 
     style A fill:#6b7280,color:#fff,stroke:#4b5563
     style B fill:#f97316,color:#fff,stroke:#ea580c
