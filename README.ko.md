@@ -77,6 +77,32 @@ graph LR
 
 > **기타 브라우저:** 생성된 확장 프로그램은 Manifest V3이며 Edge, Brave, Whale 및 기타 Chromium 기반 브라우저와 호환됩니다. 사이드로딩 단계는 브라우저마다 다릅니다.
 
+## 온디바이스 AI 설정
+
+온디바이스 모델은 API 키나 클라우드 연결 없이 하드웨어에서 완전히 실행됩니다. **이 모델들은 특정 브라우저에서만 사용할 수 있습니다:** Google Chrome에서는 Gemini Nano, Microsoft Edge에서는 Phi-4 Mini. 기타 Chromium 기반 브라우저(Brave, Whale 등)와 Firefox는 현재 브라우저 API를 통한 온디바이스 AI를 지원하지 않습니다.
+
+**Chrome - Gemini Nano:**
+1. Chrome 버전 127 이상 사용 (Dev 또는 Canary 권장).
+2. `chrome://flags/#optimization-guide-on-device-model`로 이동하여 **Enabled BypassPerfRequirement**로 설정.
+3. `chrome://flags/#prompt-api-for-gemini-nano`로 이동하여 **Enabled**로 설정.
+4. Chrome 재시작.
+5. `chrome://on-device-internals`로 이동하여 모델 상태 확인. 모델이 다운로드되지 않은 경우 `chrome://components/`로 이동하여 **Optimization Guide On Device Model**을 찾아 **Check for update** 클릭.
+6. 모델 다운로드 완료까지 대기. 몇 분이 소요될 수 있습니다. 다운로드 중에는 Chrome을 열어 두세요.
+
+**Edge - Phi-4 Mini:**
+1. Edge Dev 또는 Canary (버전 138 이상) 사용. Edge 139 이상에는 Phi-4 Mini가 기본 포함되어 있습니다.
+2. `edge://flags/`로 이동하여 **Prompt API for Phi mini**를 검색하고 **Enabled**로 설정.
+3. 선택적으로 **Enable on device AI model debug logs**를 활성화하여 문제 해결에 활용.
+4. Edge 재시작.
+5. `edge://on-device-internals`로 이동하여 **Device performance class**가 **High** 이상인지 확인.
+6. 모델은 처음 사용할 때 자동으로 다운로드됩니다. 몇 분이 소요될 수 있습니다. 다운로드 중에는 Edge를 열어 두세요.
+
+**Edge 하드웨어 요구 사항:** Windows 10/11 또는 macOS 13.3 이상, 20 GB 이상의 여유 저장 공간, 5.5 GB 이상의 VRAM, 종량제가 아닌 인터넷 연결.
+
+**Chrome 하드웨어 요구 사항:** 22 GB 여유 저장 공간, 4 GB 초과 VRAM (GPU) 또는 16 GB 이상 RAM 및 4코어 이상 CPU (CPU 모드), 종량제가 아닌 연결.
+
+> **참고:** 온디바이스 모델은 채팅과 파일 편집에만 사용할 수 있습니다. 확장 프로그램이나 웹사이트의 전체 빌드에는 클라우드 모델을 선택하세요.
+
 ## 최상의 결과를 위한 팁
 
 - 간단한 설명부터 시작하여 점진적으로 구축. 먼저 핵심 기능을 설명한 다음 편집 및 개선을 사용하여 점진적으로 기능 추가.
