@@ -65,55 +65,12 @@ graph LR
 
 ## Pour Commencer
 
-1. Installez l'extension depuis le Chrome Web Store (ou chargez-la en mode developpeur).
-2. Cliquez sur Parametres et entrez votre cle API de votre fournisseur cloud. La cle de chaque fournisseur est sauvegardee separement - changez de modele librement.
-3. Selectionnez un modele d'IA dans le menu deroulant.
-4. Acceptez les Conditions d'Utilisation (premiere fois uniquement).
-5. Decrivez ce que vous souhaitez construire dans le chat.
-6. Cliquez sur "Construire l'Extension" ou "Construire le Site Web" et attendez la generation.
-7. Passez en revue et editez les fichiers generes selon vos besoins avec les outils d'edition integres.
-8. Cliquez sur "Tout telecharger en ZIP".
-9. Pour les extensions : Extrayez le ZIP, allez a `chrome://extensions`, activez le mode developpeur et cliquez sur "Charger l'extension non empaquetee". Pour les sites web : Extrayez et ouvrez `index.html` dans votre navigateur.
+1. Acceptez les Conditions d'Utilisation (premier lancement).
+2. Entrez votre cle API de votre fournisseur d'IA cloud dans les Parametres.
+3. Selectionnez un modele, decrivez ce que vous souhaitez et cliquez sur "Construire l'Extension" ou "Construire le Site Web".
+4. Telechargez les fichiers generes en ZIP et chargez-les dans votre navigateur.
 
-> **Autres navigateurs :** Les extensions generees sont Manifest V3 et compatibles avec Edge, Brave, Whale et d'autres navigateurs bases sur Chromium. Les etapes de chargement lateral varient selon le navigateur.
-
-## Configuration de l'IA Embarquee
-
-Les modeles embarques fonctionnent entierement sur votre materiel sans cle API ni connexion cloud. **Ces modeles ne sont disponibles que dans des navigateurs specifiques :** Gemini Nano dans Google Chrome et Phi-4 Mini dans Microsoft Edge. Les autres navigateurs bases sur Chromium (Brave, Whale, etc.) et Firefox ne supportent pas actuellement l'IA embarquee via les APIs du navigateur.
-
-**Chrome - Gemini Nano :**
-1. Utilisez Chrome version 127 ou superieure (Dev ou Canary recommande pour de meilleurs resultats).
-2. Allez a `chrome://flags/#optimization-guide-on-device-model` et configurez sur **Enabled BypassPerfRequirement**.
-3. Allez a `chrome://flags/#prompt-api-for-gemini-nano` et configurez sur **Enabled**.
-4. Redemarrez Chrome.
-5. Allez a `chrome://on-device-internals` et verifiez le statut du modele. Si le modele n'est pas telecharge, allez a `chrome://components/`, trouvez **Optimization Guide On Device Model** et cliquez sur **Check for update**.
-6. Attendez que le modele se telecharge. Cela peut prendre plusieurs minutes. Gardez Chrome ouvert pendant le telechargement.
-
-**Edge - Phi-4 Mini :**
-1. Utilisez Edge Dev ou Canary (version 138+). Edge 139+ inclut Phi-4 Mini par defaut.
-2. Allez a `edge://flags/` et recherchez **Prompt API for Phi mini**, configurez sur **Enabled**.
-3. Optionnellement, activez **Enable on device AI model debug logs** pour le depannage.
-4. Redemarrez Edge.
-5. Allez a `edge://on-device-internals` et verifiez que votre **Device performance class** est **High** ou superieur.
-6. Le modele se telecharge automatiquement lors de la premiere utilisation. Cela peut prendre plusieurs minutes. Gardez Edge ouvert pendant le telechargement.
-
-**Configuration requise pour Edge :** Windows 10/11 ou macOS 13.3+, au moins 20 Go d'espace libre, 5,5 Go+ de VRAM et une connexion internet non limitee.
-
-**Configuration requise pour Chrome :** 22 Go d'espace libre, plus de 4 Go de VRAM (GPU) ou 16 Go+ de RAM avec 4+ coeurs CPU (mode CPU) et une connexion non limitee.
-
-> **Remarque :** Les modeles embarques ne peuvent etre utilises que pour le chat et l'edition de fichiers. Pour construire des extensions ou des sites web complets, selectionnez un modele cloud.
-
-## Conseils pour de Meilleurs Resultats
-
-- Commencez par une description simple et construisez progressivement. Decrivez d'abord la fonctionnalite principale, puis utilisez Editer et Ameliorer pour ajouter plus de fonctionnalites de maniere incrementale.
-- Utilisez un modele avec une fenetre de contexte plus grande pour les projets complexes. Les modeles plus grands gerent mieux les sorties volumineuses que les plus petits.
-- Si vous voyez "Impossible d'extraire les fichiers de l'extension", le prompt etait trop complexe pour une generation. Simplifiez le prompt initial et ajoutez des fonctionnalites par l'edition.
-- Si vous voyez une erreur d'analyse JSON, la reponse du modele etait trop longue et a ete coupee. Essayez un prompt plus simple ou passez a un modele avec une limite de sortie plus grande.
-- Les modeles cloud, personnalises et distants peuvent tous etre utilises pour construire, editer et chatter. Choisissez le modele qui correspond le mieux a vos besoins et a votre budget.
-- Les modeles embarques fonctionnent pour le chat et l'edition mais ne peuvent pas construire d'extensions ou de sites web complets. Utilisez un modele cloud ou personnalise pour la construction.
-- Entree pour envoyer un message de chat. Maj+Entree pour une nouvelle ligne. Ctrl/Cmd+Entree pour construire une extension. Ctrl/Cmd+Maj+Entree pour construire un site web.
-- Apres la construction, utilisez Editer le Fichier pour les modifications d'un seul fichier et Ameliorer l'Extension pour les modifications sur plusieurs fichiers.
-- Importez des fichiers existants via Plus (▾) → Importer des Fichiers pour les editer avec l'IA.
+Pour des instructions detaillees de configuration, la configuration de l'IA embarquee, le depannage et les conseils, consultez le [Guide de Demarrage](getting-started-fr-3-26-2026.md).
 
 ## Cles API
 
