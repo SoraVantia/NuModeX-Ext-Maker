@@ -65,55 +65,12 @@ graph LR
 
 ## Per Iniziare
 
-1. Installa l'estensione dal Chrome Web Store (o caricala non compressa in modalita sviluppatore).
-2. Clicca su Impostazioni e inserisci la tua chiave API del tuo fornitore cloud. La chiave di ogni fornitore viene salvata separatamente - cambia modello liberamente.
-3. Seleziona un modello di IA dal menu a tendina.
-4. Accetta i Termini di Servizio (solo la prima volta).
-5. Descrivi cosa vuoi costruire nella chat.
-6. Clicca su "Costruisci Estensione" o "Costruisci Sito Web" e attendi la generazione.
-7. Rivedi e modifica i file generati secondo necessita usando gli strumenti di modifica integrati.
-8. Clicca su "Scarica tutto come ZIP".
-9. Per le estensioni: Estrai lo ZIP, vai a `chrome://extensions`, attiva la modalita sviluppatore e clicca su "Carica estensione non compressa". Per i siti web: Estrai e apri `index.html` nel tuo browser.
+1. Accetta i Termini di Servizio (primo avvio).
+2. Inserisci la tua chiave API del tuo fornitore di IA cloud nelle Impostazioni.
+3. Seleziona un modello, descrivi cosa vuoi costruire e clicca su "Costruisci Estensione" o "Costruisci Sito Web".
+4. Scarica i file generati come ZIP e caricali nel tuo browser.
 
-> **Altri browser:** Le estensioni generate sono Manifest V3 e compatibili con Edge, Brave, Whale e altri browser basati su Chromium. I passaggi per il caricamento laterale variano in base al browser.
-
-## Configurazione dell'IA su Dispositivo
-
-I modelli su dispositivo funzionano interamente sul tuo hardware senza bisogno di chiave API o connessione cloud. **Questi modelli sono disponibili solo in browser specifici:** Gemini Nano in Google Chrome e Phi-4 Mini in Microsoft Edge. Altri browser basati su Chromium (Brave, Whale, ecc.) e Firefox non supportano attualmente l'IA su dispositivo tramite le API del browser.
-
-**Chrome - Gemini Nano:**
-1. Usa Chrome versione 127 o superiore (Dev o Canary consigliato per i migliori risultati).
-2. Vai a `chrome://flags/#optimization-guide-on-device-model` e imposta su **Enabled BypassPerfRequirement**.
-3. Vai a `chrome://flags/#prompt-api-for-gemini-nano` e imposta su **Enabled**.
-4. Riavvia Chrome.
-5. Vai a `chrome://on-device-internals` e verifica lo stato del modello. Se il modello non e scaricato, vai a `chrome://components/`, trova **Optimization Guide On Device Model** e clicca su **Check for update**.
-6. Attendi il download del modello. Potrebbe richiedere diversi minuti. Mantieni Chrome aperto durante il download.
-
-**Edge - Phi-4 Mini:**
-1. Usa Edge Dev o Canary (versione 138+). Edge 139+ include Phi-4 Mini per impostazione predefinita.
-2. Vai a `edge://flags/` e cerca **Prompt API for Phi mini**, imposta su **Enabled**.
-3. Facoltativamente, attiva **Enable on device AI model debug logs** per la risoluzione dei problemi.
-4. Riavvia Edge.
-5. Vai a `edge://on-device-internals` e verifica che la tua **Device performance class** sia **High** o superiore.
-6. Il modello viene scaricato automaticamente al primo utilizzo. Potrebbe richiedere diversi minuti. Mantieni Edge aperto durante il download.
-
-**Requisiti hardware per Edge:** Windows 10/11 o macOS 13.3+, almeno 20 GB di spazio libero, 5,5 GB+ di VRAM e una connessione internet non a consumo.
-
-**Requisiti hardware per Chrome:** 22 GB di spazio libero, piu di 4 GB di VRAM (GPU) o 16 GB+ di RAM con 4+ core CPU (modalita CPU) e una connessione non a consumo.
-
-> **Nota:** I modelli su dispositivo possono essere usati solo per la chat e la modifica dei file. Per costruire estensioni o siti web completi, seleziona un modello cloud.
-
-## Consigli per i Migliori Risultati
-
-- Inizia con una descrizione semplice e costruisci gradualmente. Descrivi prima la funzionalita principale, poi usa Modifica e Migliora per aggiungere piu funzionalita in modo incrementale.
-- Usa un modello con una finestra di contesto piu grande per progetti complessi. I modelli piu grandi gestiscono output piu grandi meglio di quelli piu piccoli.
-- Se vedi "Impossibile estrarre i file dell'estensione", il prompt era troppo complesso per una generazione. Semplifica il prompt iniziale e aggiungi funzionalita attraverso la modifica.
-- Se vedi un errore di analisi JSON, la risposta del modello era troppo lunga ed e stata troncata. Prova un prompt piu semplice o passa a un modello con un limite di output maggiore.
-- I modelli cloud, personalizzati e remoti possono tutti essere usati per costruire, modificare e chattare. Scegli il modello che meglio si adatta alle tue esigenze e al tuo budget.
-- I modelli su dispositivo funzionano per la chat e la modifica ma non possono costruire estensioni o siti web completi. Usa un modello cloud o personalizzato per la costruzione.
-- Invio per inviare un messaggio di chat. Shift+Invio per una nuova riga. Ctrl/Cmd+Invio per costruire un'estensione. Ctrl/Cmd+Shift+Invio per costruire un sito web.
-- Dopo la costruzione, usa Modifica File per modifiche a singoli file e Migliora Estensione per modifiche su piu file.
-- Importa file esistenti tramite Altro (▾) → Importa File per modificarli con l'IA.
+Per istruzioni dettagliate di configurazione, configurazione dell'IA su dispositivo, risoluzione dei problemi e consigli, consulta la [Guida Introduttiva](getting-started-it-3-26-2026.md).
 
 ## Chiavi API
 
