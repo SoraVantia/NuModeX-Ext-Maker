@@ -43,13 +43,13 @@ Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraV
 
 ```mermaid
 graph LR
-    A[Your Browser] --> B[NuModeX Ext Maker]
-    B --> C[Local Storage<br/>IndexedDB + Extension Storage]
-    B --> D[Sandboxed Preview<br/>iframe]
-    B --> E[Cloud AI Providers<br/>Your API Key]
-    B --> F[On-Device AI<br/>Processed on Your Device]
-    B --> G[Custom Local Server<br/>Your Configured Endpoint]
-    B --> H[Custom Remote Server<br/>Your Configured Endpoint]
+    A[Il Tuo Browser] --> B[NuModeX Ext Maker]
+    B --> C[Archiviazione Locale<br/>IndexedDB + Archiviazione Estensione]
+    B --> D[Anteprima Sandbox<br/>iframe]
+    B --> E[Fornitori di IA Cloud<br/>La Tua Chiave API]
+    B --> F[IA su Dispositivo<br/>Elaborato sul Tuo Dispositivo]
+    B --> G[Server Locale Personalizzato<br/>Il Tuo Endpoint Configurato]
+    B --> H[Server Remoto Personalizzato<br/>Il Tuo Endpoint Configurato]
 
     style A fill:#6b7280,color:#fff,stroke:#4b5563
     style B fill:#f97316,color:#fff,stroke:#ea580c
