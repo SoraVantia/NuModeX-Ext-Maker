@@ -43,13 +43,13 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 
 ```mermaid
 graph LR
-    A[Your Browser] --> B[NuModeX Ext Maker]
-    B --> C[Local Storage<br/>IndexedDB + Extension Storage]
-    B --> D[Sandboxed Preview<br/>iframe]
-    B --> E[Cloud AI Providers<br/>Your API Key]
-    B --> F[On-Device AI<br/>Processed on Your Device]
-    B --> G[Custom Local Server<br/>Your Configured Endpoint]
-    B --> H[Custom Remote Server<br/>Your Configured Endpoint]
+    A[Ihr Browser] --> B[NuModeX Ext Maker]
+    B --> C[Lokaler Speicher<br/>IndexedDB + Erweiterungsspeicher]
+    B --> D[Sandbox-Vorschau<br/>iframe]
+    B --> E[Cloud-KI-Anbieter<br/>Ihr API-Schluessel]
+    B --> F[Geraeteinterne KI<br/>Auf Ihrem Geraet verarbeitet]
+    B --> G[Benutzerdefinierter Lokaler Server<br/>Ihr Konfigurierter Endpoint]
+    B --> H[Benutzerdefinierter Remote-Server<br/>Ihr Konfigurierter Endpoint]
 
     style A fill:#6b7280,color:#fff,stroke:#4b5563
     style B fill:#f97316,color:#fff,stroke:#ea580c
