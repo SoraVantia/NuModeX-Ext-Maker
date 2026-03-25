@@ -145,9 +145,9 @@ function getLanguageInstruction() {
         'es': 'Spanish',
         'fr': 'French',
         'ko': 'Korean',
-        'zh': 'Chinese',
+        'zh_CN': 'Chinese',
         'de': 'German',
-        'pt': 'Portuguese',
+        'pt_BR': 'Portuguese',
         'it': 'Italian'
     };
     const langName = langMap[currentLang] || 'English';
@@ -1055,8 +1055,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     const preferredLang = storageResult.userPreferredLanguage;
-    const browserLang = chrome.i18n.getUILanguage().split('-')[0] || 'en';
-    const supportedLangs = ['en', 'ja', 'es', 'fr', 'ko', 'zh', 'de', 'pt', 'it'];
+    const supportedLangs = ['en', 'ja', 'es', 'fr', 'ko', 'zh_CN', 'de', 'pt_BR', 'it'];
+    const rawBrowserLang = chrome.i18n.getUILanguage();
+    const normalizedLang = rawBrowserLang.replace('-', '_');
+    const baseLang = rawBrowserLang.split('-')[0];
+    const browserLang = supportedLangs.includes(normalizedLang) ? normalizedLang : (baseLang || 'en');
 
     if (preferredLang && supportedLangs.includes(preferredLang)) {
         currentLang = preferredLang;
