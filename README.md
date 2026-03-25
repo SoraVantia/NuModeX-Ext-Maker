@@ -65,55 +65,12 @@ graph LR
 
 ## Getting Started
 
-1. Install the extension from Chrome Web Store (or load unpacked in developer mode).
-2. Click Settings and enter your API key from your cloud provider. Each provider's key is saved separately - switch models freely.
-3. Select an AI model from the dropdown.
-4. Accept the Terms of Service (first time only).
-5. Describe what you want to build in the chat.
-6. Click "Build Extension" or "Build Website" and wait for generation.
-7. Review and edit generated files as needed using the built-in editing tools.
-8. Click "Download All as ZIP".
-9. For extensions: Extract the ZIP, go to `chrome://extensions`, enable Developer mode, and click "Load unpacked". For websites: Extract and open `index.html` in your browser.
+1. Accept the Terms of Service (first launch).
+2. Enter your API key from your cloud AI provider in Settings.
+3. Select a model, describe what you want, and click "Build Extension" or "Build Website".
+4. Download the generated files as ZIP and load them in your browser.
 
-> **Other browsers:** Generated extensions are Manifest V3 and compatible with Edge, Brave, Whale, and other Chromium-based browsers. Sideloading steps vary by browser.
-
-## On-Device AI Setup
-
-On-device models run entirely on your hardware with no API key or cloud connection needed. **These models are only available in specific browsers:** Gemini Nano in Google Chrome and Phi-4 Mini in Microsoft Edge. Other Chromium-based browsers (Brave, Whale, etc.) and Firefox do not currently support on-device AI through browser APIs.
-
-**Chrome - Gemini Nano:**
-1. Use Chrome version 127 or higher (Dev or Canary recommended for best results).
-2. Go to `chrome://flags/#optimization-guide-on-device-model` and set to **Enabled BypassPerfRequirement**.
-3. Go to `chrome://flags/#prompt-api-for-gemini-nano` and set to **Enabled**.
-4. Restart Chrome.
-5. Go to `chrome://on-device-internals` and verify the model status. If the model is not downloaded, go to `chrome://components/`, find **Optimization Guide On Device Model** and click **Check for update**.
-6. Wait for the model to download. This may take several minutes. Keep Chrome open during the download.
-
-**Edge - Phi-4 Mini:**
-1. Use Edge Dev or Canary (version 138+). Edge 139+ includes Phi-4 Mini by default.
-2. Go to `edge://flags/` and search for **Prompt API for Phi mini**, set to **Enabled**.
-3. Optionally enable **Enable on device AI model debug logs** for troubleshooting.
-4. Restart Edge.
-5. Go to `edge://on-device-internals` and verify your **Device performance class** is **High** or greater.
-6. The model downloads automatically on first use. This may take several minutes. Keep Edge open during the download.
-
-**Hardware requirements for Edge:** Windows 10/11 or macOS 13.3+, at least 20 GB free storage, 5.5 GB+ VRAM, and an unmetered internet connection.
-
-**Hardware requirements for Chrome:** 22 GB free storage, more than 4 GB VRAM (GPU) or 16 GB+ RAM with 4+ CPU cores (CPU mode), and an unmetered connection.
-
-> **Note:** On-device models can only be used for chat and file editing. To build full extensions or websites, select a cloud model.
-
-## Tips for Best Results
-
-- Start with a simple description and build up. Describe the core feature first, then use Edit and Improve to add more features incrementally.
-- Use a model with a larger context window for complex projects. Larger models handle bigger outputs better than smaller ones.
-- If you see "Could not extract extension files," the prompt was too complex for one generation. Simplify the initial prompt and add features through editing.
-- If you see a JSON parsing error, the model's response was too long and got cut off. Try a simpler prompt or switch to a model with a larger output limit.
-- Cloud, custom, and remote models can all be used to build, edit, and chat. Choose the model that best fits your needs and budget.
-- On-device models work for chat and editing but cannot build full extensions or websites. Use a cloud or custom model for building.
-- Enter to send a chat message. Shift+Enter for a new line. Ctrl/Cmd+Enter to build an extension. Ctrl/Cmd+Shift+Enter to build a website.
-- After building, use Edit File for single-file changes and Improve Extension for changes across multiple files.
-- Import existing files via More (▾) → Import Files to edit them with AI.
+For detailed setup instructions, on-device AI configuration, troubleshooting, and tips, see [Getting Started](getting-started-en-3-26-2026.md).
 
 ## API Keys
 
