@@ -77,6 +77,32 @@ graph LR
 
 > **其他浏览器：** 生成的扩展程序是 Manifest V3，与 Edge、Brave、Whale 及其他基于 Chromium 的浏览器兼容。侧载步骤因浏览器而异。
 
+## 设备端 AI 设置
+
+设备端模型完全在您的硬件上运行，无需 API 密钥或云连接。**这些模型仅在特定浏览器中可用：** Google Chrome 中的 Gemini Nano 和 Microsoft Edge 中的 Phi-4 Mini。其他基于 Chromium 的浏览器（Brave、Whale 等）和 Firefox 目前不支持通过浏览器 API 使用设备端 AI。
+
+**Chrome - Gemini Nano：**
+1. 使用 Chrome 版本 127 或更高（推荐使用 Dev 或 Canary 以获得最佳效果）。
+2. 前往 `chrome://flags/#optimization-guide-on-device-model` 并设置为 **Enabled BypassPerfRequirement**。
+3. 前往 `chrome://flags/#prompt-api-for-gemini-nano` 并设置为 **Enabled**。
+4. 重启 Chrome。
+5. 前往 `chrome://on-device-internals` 并验证模型状态。如果模型未下载，前往 `chrome://components/`，找到 **Optimization Guide On Device Model** 并点击 **Check for update**。
+6. 等待模型下载完成。这可能需要几分钟。下载期间请保持 Chrome 打开。
+
+**Edge - Phi-4 Mini：**
+1. 使用 Edge Dev 或 Canary（版本 138+）。Edge 139+ 默认包含 Phi-4 Mini。
+2. 前往 `edge://flags/` 并搜索 **Prompt API for Phi mini**，设置为 **Enabled**。
+3. 可选：启用 **Enable on device AI model debug logs** 以进行故障排除。
+4. 重启 Edge。
+5. 前往 `edge://on-device-internals` 并验证您的 **Device performance class** 为 **High** 或更高。
+6. 模型会在首次使用时自动下载。这可能需要几分钟。下载期间请保持 Edge 打开。
+
+**Edge 硬件要求：** Windows 10/11 或 macOS 13.3+，至少 20 GB 可用存储空间，5.5 GB+ VRAM，以及非流量计费的互联网连接。
+
+**Chrome 硬件要求：** 22 GB 可用存储空间，超过 4 GB VRAM（GPU）或 16 GB+ RAM 及 4+ CPU 核心（CPU 模式），以及非流量计费的连接。
+
+> **注意：** 设备端模型仅可用于聊天和文件编辑。要构建完整的扩展程序或网站，请选择云端模型。
+
 ## 获得最佳效果的提示
 
 - 从简单描述开始逐步构建。先描述核心功能，然后使用编辑和改进逐步添加更多功能。
@@ -129,6 +155,7 @@ NuModeX Ext Maker 是源代码公开的，根据 Business Source License 1.1（B
 ## 法律声明
 
 安装或使用 NuModeX Ext Maker，即表示您同意[最终用户许可协议](eula-zh-v2.5.md)和[隐私政策](privacy-policy-zh-v2.5.md)。
+本项目目前不接受拉取请求。请使用 Issues 报告错误和请求功能。这可能在未来有所改变。
 
 ## 第三方声明
 
