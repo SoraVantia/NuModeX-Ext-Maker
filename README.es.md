@@ -65,55 +65,12 @@ graph LR
 
 ## Primeros Pasos
 
-1. Instala la extension desde Chrome Web Store (o carga sin empaquetar en modo desarrollador).
-2. Haz clic en Configuracion e ingresa tu clave API de tu proveedor en la nube. La clave de cada proveedor se guarda por separado - cambia de modelo libremente.
-3. Selecciona un modelo de IA del menu desplegable.
-4. Acepta los Terminos de Servicio (solo la primera vez).
-5. Describe lo que quieres construir en el chat.
-6. Haz clic en "Construir Extension" o "Construir Sitio Web" y espera la generacion.
-7. Revisa y edita los archivos generados segun sea necesario usando las herramientas de edicion integradas.
-8. Haz clic en "Descargar todo como ZIP".
-9. Para extensiones: Extrae el ZIP, ve a `chrome://extensions`, activa el modo desarrollador y haz clic en "Cargar descomprimida". Para sitios web: Extrae y abre `index.html` en tu navegador.
+1. Acepta los Terminos de Servicio (primer inicio).
+2. Ingresa tu clave API de tu proveedor de IA en la nube en Configuracion.
+3. Selecciona un modelo, describe lo que quieres y haz clic en "Construir Extension" o "Construir Sitio Web".
+4. Descarga los archivos generados como ZIP y cargalos en tu navegador.
 
-> **Otros navegadores:** Las extensiones generadas son Manifest V3 y compatibles con Edge, Brave, Whale y otros navegadores basados en Chromium. Los pasos de carga lateral varian segun el navegador.
-
-## Configuracion de IA en el Dispositivo
-
-Los modelos en el dispositivo se ejecutan completamente en tu hardware sin necesidad de clave API ni conexion a la nube. **Estos modelos solo estan disponibles en navegadores especificos:** Gemini Nano en Google Chrome y Phi-4 Mini en Microsoft Edge. Otros navegadores basados en Chromium (Brave, Whale, etc.) y Firefox no soportan actualmente IA en el dispositivo a traves de APIs del navegador.
-
-**Chrome - Gemini Nano:**
-1. Usa Chrome version 127 o superior (Dev o Canary recomendado para mejores resultados).
-2. Ve a `chrome://flags/#optimization-guide-on-device-model` y configura como **Enabled BypassPerfRequirement**.
-3. Ve a `chrome://flags/#prompt-api-for-gemini-nano` y configura como **Enabled**.
-4. Reinicia Chrome.
-5. Ve a `chrome://on-device-internals` y verifica el estado del modelo. Si el modelo no esta descargado, ve a `chrome://components/`, busca **Optimization Guide On Device Model** y haz clic en **Check for update**.
-6. Espera a que el modelo se descargue. Puede tardar varios minutos. Mantén Chrome abierto durante la descarga.
-
-**Edge - Phi-4 Mini:**
-1. Usa Edge Dev o Canary (version 138+). Edge 139+ incluye Phi-4 Mini por defecto.
-2. Ve a `edge://flags/` y busca **Prompt API for Phi mini**, configura como **Enabled**.
-3. Opcionalmente activa **Enable on device AI model debug logs** para solucion de problemas.
-4. Reinicia Edge.
-5. Ve a `edge://on-device-internals` y verifica que tu **Device performance class** sea **High** o superior.
-6. El modelo se descarga automaticamente en el primer uso. Puede tardar varios minutos. Mantén Edge abierto durante la descarga.
-
-**Requisitos de hardware para Edge:** Windows 10/11 o macOS 13.3+, al menos 20 GB de almacenamiento libre, 5.5 GB+ de VRAM y una conexion a internet sin limite de datos.
-
-**Requisitos de hardware para Chrome:** 22 GB de almacenamiento libre, mas de 4 GB de VRAM (GPU) o 16 GB+ de RAM con 4+ nucleos de CPU (modo CPU) y una conexion sin limite de datos.
-
-> **Nota:** Los modelos en el dispositivo solo pueden usarse para chat y edicion de archivos. Para construir extensiones o sitios web completos, selecciona un modelo en la nube.
-
-## Consejos para Mejores Resultados
-
-- Comienza con una descripcion simple y ve construyendo. Describe primero la funcion principal, luego usa Editar y Mejorar para agregar mas funciones de forma incremental.
-- Usa un modelo con una ventana de contexto mas grande para proyectos complejos. Los modelos mas grandes manejan mejor las salidas grandes que los mas pequenos.
-- Si ves "No se pudieron extraer los archivos de la extension", el prompt era demasiado complejo para una generacion. Simplifica el prompt inicial y agrega funciones mediante edicion.
-- Si ves un error de analisis JSON, la respuesta del modelo fue demasiado larga y se corto. Prueba un prompt mas simple o cambia a un modelo con un limite de salida mayor.
-- Los modelos en la nube, personalizados y remotos pueden usarse para construir, editar y chatear. Elige el modelo que mejor se adapte a tus necesidades y presupuesto.
-- Los modelos en el dispositivo funcionan para chat y edicion pero no pueden construir extensiones o sitios web completos. Usa un modelo en la nube o personalizado para construir.
-- Enter para enviar un mensaje de chat. Shift+Enter para nueva linea. Ctrl/Cmd+Enter para construir una extension. Ctrl/Cmd+Shift+Enter para construir un sitio web.
-- Despues de construir, usa Editar Archivo para cambios en un solo archivo y Mejorar Extension para cambios en multiples archivos.
-- Importa archivos existentes via Mas (▾) → Importar Archivos para editarlos con IA.
+Para instrucciones detalladas de configuracion, configuracion de IA en el dispositivo, solucion de problemas y consejos, consulta la [Guia de Inicio](getting-started-es-3-26-2026.md).
 
 ## Claves API
 
