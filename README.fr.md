@@ -77,6 +77,32 @@ graph LR
 
 > **Autres navigateurs :** Les extensions generees sont Manifest V3 et compatibles avec Edge, Brave, Whale et d'autres navigateurs bases sur Chromium. Les etapes de chargement lateral varient selon le navigateur.
 
+## Configuration de l'IA Embarquee
+
+Les modeles embarques fonctionnent entierement sur votre materiel sans cle API ni connexion cloud. **Ces modeles ne sont disponibles que dans des navigateurs specifiques :** Gemini Nano dans Google Chrome et Phi-4 Mini dans Microsoft Edge. Les autres navigateurs bases sur Chromium (Brave, Whale, etc.) et Firefox ne supportent pas actuellement l'IA embarquee via les APIs du navigateur.
+
+**Chrome - Gemini Nano :**
+1. Utilisez Chrome version 127 ou superieure (Dev ou Canary recommande pour de meilleurs resultats).
+2. Allez a `chrome://flags/#optimization-guide-on-device-model` et configurez sur **Enabled BypassPerfRequirement**.
+3. Allez a `chrome://flags/#prompt-api-for-gemini-nano` et configurez sur **Enabled**.
+4. Redemarrez Chrome.
+5. Allez a `chrome://on-device-internals` et verifiez le statut du modele. Si le modele n'est pas telecharge, allez a `chrome://components/`, trouvez **Optimization Guide On Device Model** et cliquez sur **Check for update**.
+6. Attendez que le modele se telecharge. Cela peut prendre plusieurs minutes. Gardez Chrome ouvert pendant le telechargement.
+
+**Edge - Phi-4 Mini :**
+1. Utilisez Edge Dev ou Canary (version 138+). Edge 139+ inclut Phi-4 Mini par defaut.
+2. Allez a `edge://flags/` et recherchez **Prompt API for Phi mini**, configurez sur **Enabled**.
+3. Optionnellement, activez **Enable on device AI model debug logs** pour le depannage.
+4. Redemarrez Edge.
+5. Allez a `edge://on-device-internals` et verifiez que votre **Device performance class** est **High** ou superieur.
+6. Le modele se telecharge automatiquement lors de la premiere utilisation. Cela peut prendre plusieurs minutes. Gardez Edge ouvert pendant le telechargement.
+
+**Configuration requise pour Edge :** Windows 10/11 ou macOS 13.3+, au moins 20 Go d'espace libre, 5,5 Go+ de VRAM et une connexion internet non limitee.
+
+**Configuration requise pour Chrome :** 22 Go d'espace libre, plus de 4 Go de VRAM (GPU) ou 16 Go+ de RAM avec 4+ coeurs CPU (mode CPU) et une connexion non limitee.
+
+> **Remarque :** Les modeles embarques ne peuvent etre utilises que pour le chat et l'edition de fichiers. Pour construire des extensions ou des sites web complets, selectionnez un modele cloud.
+
 ## Conseils pour de Meilleurs Resultats
 
 - Commencez par une description simple et construisez progressivement. Decrivez d'abord la fonctionnalite principale, puis utilisez Editer et Ameliorer pour ajouter plus de fonctionnalites de maniere incrementale.
