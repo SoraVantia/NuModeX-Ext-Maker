@@ -65,55 +65,12 @@ graph LR
 
 ## Erste Schritte
 
-1. Installieren Sie die Erweiterung aus dem Chrome Web Store (oder laden Sie sie im Entwicklermodus entpackt).
-2. Klicken Sie auf Einstellungen und geben Sie Ihren API-Schlüssel Ihres Cloud-Anbieters ein. Der Schlüssel jedes Anbieters wird separat gespeichert - wechseln Sie frei zwischen Modellen.
-3. Wählen Sie ein KI-Modell aus dem Dropdown-Menü.
-4. Akzeptieren Sie die Nutzungsbedingungen (nur beim ersten Mal).
-5. Beschreiben Sie im Chat, was Sie erstellen möchten.
-6. Klicken Sie auf "Erweiterung erstellen" oder "Website erstellen" und warten Sie auf die Generierung.
-7. Überprüfen und bearbeiten Sie die generierten Dateien nach Bedarf mit den integrierten Bearbeitungswerkzeugen.
-8. Klicken Sie auf "Alles als ZIP herunterladen".
-9. Für Erweiterungen: Entpacken Sie die ZIP-Datei, gehen Sie zu `chrome://extensions`, aktivieren Sie den Entwicklermodus und klicken Sie auf "Entpackte Erweiterung laden". Für Websites: Entpacken und `index.html` in Ihrem Browser öffnen.
+1. Akzeptieren Sie die Nutzungsbedingungen (erster Start).
+2. Geben Sie Ihren API-Schlüssel Ihres Cloud-KI-Anbieters in den Einstellungen ein.
+3. Wählen Sie ein Modell, beschreiben Sie, was Sie erstellen möchten, und klicken Sie auf "Erweiterung erstellen" oder "Website erstellen".
+4. Laden Sie die generierten Dateien als ZIP herunter und laden Sie sie in Ihrem Browser.
 
-> **Andere Browser:** Generierte Erweiterungen sind Manifest V3 und kompatibel mit Edge, Brave, Whale und anderen Chromium-basierten Browsern. Die Schritte zum Seitenladen variieren je nach Browser.
-
-## Einrichtung der geräteinternen KI
-
-Geräteinterne Modelle laufen vollständig auf Ihrer Hardware ohne API-Schlüssel oder Cloud-Verbindung. **Diese Modelle sind nur in bestimmten Browsern verfügbar:** Gemini Nano in Google Chrome und Phi-4 Mini in Microsoft Edge. Andere Chromium-basierte Browser (Brave, Whale usw.) und Firefox unterstützen derzeit keine geräteinterne KI über Browser-APIs.
-
-**Chrome - Gemini Nano:**
-1. Verwenden Sie Chrome Version 127 oder höher (Dev oder Canary für beste Ergebnisse empfohlen).
-2. Gehen Sie zu `chrome://flags/#optimization-guide-on-device-model` und setzen Sie auf **Enabled BypassPerfRequirement**.
-3. Gehen Sie zu `chrome://flags/#prompt-api-for-gemini-nano` und setzen Sie auf **Enabled**.
-4. Starten Sie Chrome neu.
-5. Gehen Sie zu `chrome://on-device-internals` und überprüfen Sie den Modellstatus. Wenn das Modell nicht heruntergeladen ist, gehen Sie zu `chrome://components/`, suchen Sie **Optimization Guide On Device Model** und klicken Sie auf **Check for update**.
-6. Warten Sie, bis das Modell heruntergeladen ist. Dies kann einige Minuten dauern. Lassen Sie Chrome während des Downloads geöffnet.
-
-**Edge - Phi-4 Mini:**
-1. Verwenden Sie Edge Dev oder Canary (Version 138+). Edge 139+ enthält Phi-4 Mini standardmäßig.
-2. Gehen Sie zu `edge://flags/` und suchen Sie nach **Prompt API for Phi mini**, setzen Sie auf **Enabled**.
-3. Optional aktivieren Sie **Enable on device AI model debug logs** zur Fehlerbehebung.
-4. Starten Sie Edge neu.
-5. Gehen Sie zu `edge://on-device-internals` und überprüfen Sie, ob Ihre **Device performance class** **High** oder höher ist.
-6. Das Modell wird bei der ersten Verwendung automatisch heruntergeladen. Dies kann einige Minuten dauern. Lassen Sie Edge während des Downloads geöffnet.
-
-**Hardwareanforderungen für Edge:** Windows 10/11 oder macOS 13.3+, mindestens 20 GB freier Speicherplatz, 5,5 GB+ VRAM und eine nicht-volumenbegrenzte Internetverbindung.
-
-**Hardwareanforderungen für Chrome:** 22 GB freier Speicherplatz, mehr als 4 GB VRAM (GPU) oder 16 GB+ RAM mit 4+ CPU-Kernen (CPU-Modus) und eine nicht-volumenbegrenzte Verbindung.
-
-> **Hinweis:** Geräteinterne Modelle können nur für Chat und Dateibearbeitung verwendet werden. Um vollständige Erweiterungen oder Websites zu erstellen, wählen Sie ein Cloud-Modell.
-
-## Tipps für beste Ergebnisse
-
-- Beginnen Sie mit einer einfachen Beschreibung und bauen Sie schrittweise auf. Beschreiben Sie zuerst die Kernfunktion, dann verwenden Sie Bearbeiten und Verbessern, um weitere Funktionen schrittweise hinzuzufügen.
-- Verwenden Sie ein Modell mit einem größeren Kontextfenster für komplexe Projekte. Größere Modelle verarbeiten umfangreichere Ausgaben besser als kleinere.
-- Wenn Sie "Erweiterungsdateien konnten nicht extrahiert werden" sehen, war der Prompt für eine Generierung zu komplex. Vereinfachen Sie den anfänglichen Prompt und fügen Sie Funktionen durch Bearbeitung hinzu.
-- Wenn Sie einen JSON-Parsing-Fehler sehen, war die Antwort des Modells zu lang und wurde abgeschnitten. Versuchen Sie einen einfacheren Prompt oder wechseln Sie zu einem Modell mit einem höheren Ausgabelimit.
-- Cloud-, benutzerdefinierte und entfernte Modelle können alle zum Erstellen, Bearbeiten und Chatten verwendet werden. Wählen Sie das Modell, das am besten zu Ihren Bedürfnissen und Ihrem Budget passt.
-- Geräteinterne Modelle funktionieren für Chat und Bearbeitung, können aber keine vollständigen Erweiterungen oder Websites erstellen. Verwenden Sie ein Cloud- oder benutzerdefiniertes Modell zum Erstellen.
-- Enter zum Senden einer Chat-Nachricht. Shift+Enter für eine neue Zeile. Ctrl/Cmd+Enter zum Erstellen einer Erweiterung. Ctrl/Cmd+Shift+Enter zum Erstellen einer Website.
-- Nach dem Erstellen verwenden Sie Datei bearbeiten für Änderungen an einzelnen Dateien und Erweiterung verbessern für Änderungen an mehreren Dateien.
-- Importieren Sie vorhandene Dateien über Mehr (▾) → Dateien importieren, um sie mit KI zu bearbeiten.
+Für detaillierte Einrichtungsanweisungen, Konfiguration der geräteinternen KI, Fehlerbehebung und Tipps siehe [Erste-Schritte-Anleitung](getting-started-de-3-26-2026.md).
 
 ## API-Schlüssel
 
