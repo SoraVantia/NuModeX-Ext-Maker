@@ -41,6 +41,8 @@ Un constructor de extensiones de navegador Manifest V3 y sitios web estaticos de
 - Construye sitios web estaticos (HTML/CSS/JS) con IA - mismo flujo de trabajo basado en chat, diferente resultado
 - Disponible para uso personal y comercial
 
+![Extension Builder](assets/extension-builder/numodex-ext-maker-extension-builder-es.png)
+
 ## Flujo de Datos
 
 ```mermaid
