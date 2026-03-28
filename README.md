@@ -41,6 +41,8 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 - Build static websites (HTML/CSS/JS) with AI - same chat-based workflow, different output
 - Available for personal and commercial use
 
+![Extension Builder](assets/extension-builder/numodex-ext-maker-extension-builder-en.png)
+
 ## Data Flow
 
 ```mermaid
