@@ -41,6 +41,8 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 - Construa sites estaticos (HTML/CSS/JS) com IA - mesmo fluxo de trabalho baseado em chat, resultado diferente
 - Disponivel para uso pessoal e comercial
 
+![Extension Builder](assets/extension-builder/numodex-ext-maker-extension-builder-pt.png)
+
 ## Fluxo de Dados
 
 ```mermaid
