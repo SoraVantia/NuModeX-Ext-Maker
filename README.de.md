@@ -41,6 +41,8 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 - Erstellen Sie statische Websites (HTML/CSS/JS) mit KI - gleicher chatbasierter Arbeitsablauf, andere Ausgabe
 - Verfügbar für persönliche und kommerzielle Nutzung
 
+![Extension Builder](assets/extension-builder/numodex-ext-maker-extension-builder-de.png)
+
 ## Datenfluss
 
 ```mermaid
