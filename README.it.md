@@ -41,6 +41,8 @@ Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraV
 - Costruisci siti web statici (HTML/CSS/JS) con l'IA - stesso flusso di lavoro basato su chat, output diverso
 - Disponibile per uso personale e commerciale
 
+![Extension Builder](assets/extension-builder/numodex-ext-maker-extension-builder-it.png)
+
 ## Flusso dei Dati
 
 ```mermaid
