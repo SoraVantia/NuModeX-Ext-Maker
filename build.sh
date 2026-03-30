@@ -25,13 +25,27 @@ mkdir -p dist/whale
 cp -r src/* dist/whale/
 cp browsers/whale/manifest.json dist/whale/
 
+# Opera build
+mkdir -p dist/opera
+cp -r src/* dist/opera/
+cp browsers/opera/manifest.json dist/opera/
+
+# Safari build
+mkdir -p dist/safari
+cp -r src/* dist/safari/
+cp browsers/safari/manifest.json dist/safari/
+
 # ZIP
 cd dist/chrome && zip -r ../../numodex-ext-maker-chrome.zip . && cd ../..
 cd dist/edge && zip -r ../../numodex-ext-maker-edge.zip . && cd ../..
 cd dist/firefox && zip -r ../../numodex-ext-maker-firefox.zip . && cd ../..
 cd dist/whale && zip -r ../../numodex-ext-maker-whale.zip . && cd ../..
+cd dist/opera && zip -r ../../numodex-ext-maker-opera.zip . && cd ../..
+cd dist/safari && zip -r ../../numodex-ext-maker-safari.zip . && cd ../..
 
 echo "Build complete: numodex-ext-maker-chrome.zip"
 echo "Build complete: numodex-ext-maker-edge.zip"
 echo "Build complete: numodex-ext-maker-firefox.zip"
 echo "Build complete: numodex-ext-maker-whale.zip"
+echo "Build complete: numodex-ext-maker-opera.zip"
+echo "Build complete: numodex-ext-maker-safari.zip"
