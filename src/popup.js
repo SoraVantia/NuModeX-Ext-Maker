@@ -54,6 +54,8 @@ db.version(1).stores({
 
 // Browser detection for on-device model filtering
 const isEdgeBrowser = navigator.userAgent.includes('Edg');
+const isSafariBrowser = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
+const isFirefoxBrowser = navigator.userAgent.includes('Firefox');
 
 // EULA Management State
 let eulaCache = new Map(); // Cache loaded EULA content by language code
@@ -386,7 +388,7 @@ const AI_MODELS = [
 function getAvailableModels() {
     return AI_MODELS.filter(model => {
         if (!model.browserOnly) return true;
-        if (model.browserOnly === 'chrome' && !isEdgeBrowser) return true;
+        if (model.browserOnly === 'chrome' && !isEdgeBrowser && !isSafariBrowser && !isFirefoxBrowser) return true;
         if (model.browserOnly === 'edge' && isEdgeBrowser) return true;
         return false;
     });
@@ -762,7 +764,7 @@ function handleEulaModalKeydown(event) {
     if (event.key === 'Escape') {
         // Only allow ESC to close the modal if EULA is already accepted
         // (i.e., user opened it from the Terms of Service link to re-read it)
-        if (eulaAcceptanceStatus && eulaAcceptanceStatus.accepted && eulaAcceptanceStatus.eulaVersion === '2.3') {
+        if (eulaAcceptanceStatus && eulaAcceptanceStatus.accepted && eulaAcceptanceStatus.eulaVersion === '2.5') {
             hideEULAModal();
             pendingEulaAction = null;
         } else {
@@ -842,13 +844,13 @@ async function handleEULAAccept() {
     try {
         showLoading('Accepting EULA...', 'generation');
 
-        const response = await acceptEULA('2.3', selectedLanguage);
+        const response = await acceptEULA('2.5', selectedLanguage);
 
         if (response.accepted) {
             // Update cached acceptance status
             eulaAcceptanceStatus = {
                 accepted: true,
-                eulaVersion: '2.3',
+                eulaVersion: '2.5',
                 language_code: selectedLanguage,
                 accepted_at: new Date().toISOString()
             };
@@ -960,7 +962,7 @@ async function validateEulaForGeneration() {
 
         const eulaStatus = await checkEULAStatus();
 
-        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.3') {
+        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.5') {
             console.log('EULA validation passed');
             return true;
         }
@@ -993,7 +995,7 @@ async function checkAndShowEulaOnStartup() {
         const eulaStatus = await checkEULAStatus();
 
         // Check if EULA has been accepted for the current version
-        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.3') {
+        if (eulaStatus.accepted && eulaStatus.eulaVersion === '2.5') {
             console.log('EULA already accepted for current version, skipping modal');
             return;
         }
@@ -1048,6 +1050,9 @@ function hideHelpModal() {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM fully loaded and parsed");
     cacheDomElements();
+    if (isSafariBrowser) {
+        document.body.classList.add('safari-popup');
+    }
     loadDarkModePreference();
 
     const storageResult = await new Promise(resolve =>
@@ -3735,22 +3740,33 @@ async function downloadAllFilesAsZip() {
         const zipBlob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(zipBlob);
 
-        chrome.downloads.download({
-            url: url,
-            filename: "NuModeX_Ext_Maker_generated_extension.zip", // Suggest a filename
-            saveAs: true // Ask user where to save
-        }, downloadId => {
-            URL.revokeObjectURL(url); // Clean up blob URL
-            if (chrome.runtime.lastError) {
-                console.error("Download error:", chrome.runtime.lastError.message);
-                updateStatus(`${getTranslatedMessage('errorDownload')} ${chrome.runtime.lastError.message}`, 'error');
-            } else if (downloadId === undefined && !chrome.runtime.lastError) {
-                 // This can happen if the user cancels the download dialog
-                 updateStatus(`${getTranslatedMessage('errorDownload')} Download cancelled or failed.`, 'warning');
-            } else {
-                updateStatus('downloadSuccess', 'success');
-            }
-        });
+        if (isSafariBrowser) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "NuModeX_Ext_Maker_generated_extension.zip";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            updateStatus('downloadSuccess', 'success');
+        } else {
+            chrome.downloads.download({
+                url: url,
+                filename: "NuModeX_Ext_Maker_generated_extension.zip", // Suggest a filename
+                saveAs: true // Ask user where to save
+            }, downloadId => {
+                URL.revokeObjectURL(url); // Clean up blob URL
+                if (chrome.runtime.lastError) {
+                    console.error("Download error:", chrome.runtime.lastError.message);
+                    updateStatus(`${getTranslatedMessage('errorDownload')} ${chrome.runtime.lastError.message}`, 'error');
+                } else if (downloadId === undefined && !chrome.runtime.lastError) {
+                     // This can happen if the user cancels the download dialog
+                     updateStatus(`${getTranslatedMessage('errorDownload')} Download cancelled or failed.`, 'warning');
+                } else {
+                    updateStatus('downloadSuccess', 'success');
+                }
+            });
+        }
     } catch (error) {
         console.error("JSZip error:", error);
         updateStatus(`${getTranslatedMessage('errorZipCreation')} ${error.message}`, 'error');
