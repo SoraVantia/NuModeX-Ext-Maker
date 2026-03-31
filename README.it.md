@@ -4,7 +4,6 @@
 
 ![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg) ![Change License: Apache 2.0](https://img.shields.io/badge/Change%20License-Apache%202.0%20(2030)-green.svg) ![Chrome](https://img.shields.io/badge/Chrome-Supported-brightgreen?logo=googlechrome&logoColor=white) ![Edge](https://img.shields.io/badge/Edge-Supported-brightgreen?logo=microsoftedge&logoColor=white) ![Firefox](https://img.shields.io/badge/Firefox-Supported-brightgreen?logo=firefox&logoColor=white) ![Whale](https://img.shields.io/badge/Whale-Supported-brightgreen?logo=naver&logoColor=white) ![Opera](https://img.shields.io/badge/Opera-Supported-brightgreen?logo=opera&logoColor=white) ![Safari](https://img.shields.io/badge/Safari-Supported-brightgreen?logo=safari&logoColor=white) ![Languages](https://img.shields.io/badge/Languages-9-blueviolet)
 
-
 Crea estensioni del browser Manifest V3 e siti web statici con l'IA.
 
 Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraVantia GK. Nessun accesso, nessun abbonamento, nessun backend. Usa fornitori di IA cloud, modelli su dispositivo o il tuo server IA locale o remoto.
@@ -12,6 +11,8 @@ Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraV
 **Sito web:** https://numodex.com/numodexextmaker
 
 **Firefox Add-ons:** https://addons.mozilla.org/firefox/addon/numodex-ext-maker/
+
+**Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
 
 ## Funzionalita
 
@@ -29,6 +30,7 @@ Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraV
 - Copia il contenuto dei file negli appunti con un clic
 - Visualizzatore di codice con evidenziazione della sintassi e albero dei file integrati
 - Download ZIP delle estensioni generate con un clic
+- Importa da ZIP. Carica estensioni del browser o siti web esistenti da un file ZIP per visualizzare e modificare con l'IA
 - Supporto progetti multipli. Crea, rinomina, passa da uno all'altro ed elimina progetti
 - Denominazione automatica. I progetti vengono automaticamente denominati dal manifest dell'estensione generata
 - Persistenza dei progetti. Il tuo lavoro viene salvato automaticamente e ripristinato alla riapertura
