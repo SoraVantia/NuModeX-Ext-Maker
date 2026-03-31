@@ -12,6 +12,8 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 
 **Firefox Add-ons:** https://addons.mozilla.org/firefox/addon/numodex-ext-maker/
 
+**Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
+
 ## Funktionen
 
 - KI-gestützte Browsererweiterungsgenerierung (Manifest V3)
@@ -28,6 +30,7 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 - Dateiinhalte mit einem Klick in die Zwischenablage kopieren
 - Integrierter syntaxhervorgehobener Code-Viewer und Dateibaum
 - Ein-Klick-ZIP-Download generierter Erweiterungen
+- Aus ZIP importieren. Laden Sie bestehende Browsererweiterungen oder Websites aus einer ZIP-Datei, um sie mit KI anzuzeigen und zu bearbeiten
 - Mehrfachprojekt-Unterstützung. Projekte erstellen, umbenennen, wechseln und löschen
 - Auto-Benennung. Projekte werden automatisch nach dem Manifest der generierten Erweiterung benannt
 - Projektpersistenz. Ihre Arbeit wird automatisch gespeichert und beim erneuten Öffnen wiederhergestellt
