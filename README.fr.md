@@ -12,6 +12,8 @@ Un constructeur d'extensions de navigateur Manifest V3 et de sites web statiques
 
 **Firefox Add-ons:** https://addons.mozilla.org/firefox/addon/numodex-ext-maker/
 
+**Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
+
 ## Fonctionnalites
 
 - Generation d'extensions de navigateur par IA (Manifest V3)
@@ -28,6 +30,7 @@ Un constructeur d'extensions de navigateur Manifest V3 et de sites web statiques
 - Copiez le contenu des fichiers dans le presse-papiers en un clic
 - Visionneuse de code avec coloration syntaxique et arborescence de fichiers integrees
 - Telechargement ZIP des extensions generees en un clic
+- Importer depuis ZIP. Chargez des extensions de navigateur ou des sites web existants depuis un fichier ZIP pour les visualiser et les modifier avec l'IA
 - Support de projets multiples. Creez, renommez, basculez entre et supprimez des projets
 - Nommage automatique. Les projets sont automatiquement nommes a partir du manifest de l'extension generee
 - Persistance des projets. Votre travail est sauvegarde automatiquement et restaure a la reouverture
