@@ -2910,6 +2910,159 @@ async function importFiles() {
     }
 }
 
+async function importFromZip() {
+    const fileInput = document.getElementById('import-zip-input');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+
+    const zipFile = fileInput.files[0];
+    fileInput.value = '';
+
+    // Size guard - Safari has stricter memory limits
+    const maxZipSize = isSafariBrowser ? 25 * 1024 * 1024 : 50 * 1024 * 1024;
+    const maxSizeLabel = isSafariBrowser ? '25MB' : '50MB';
+    if (zipFile.size > maxZipSize) {
+        updateStatus(`ZIP file is too large. Maximum size is ${maxSizeLabel}.`, 'error');
+        return;
+    }
+
+    try {
+        updateStatus('Extracting ZIP file...', 'info');
+
+        const arrayBuffer = await zipFile.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+
+        const allowedExtensions = ['.js', '.css', '.json', '.html', '.htm', '.md', '.txt', '.svg', '.xml'];
+        const importedFiles = [];
+        let skippedCount = 0;
+
+        const filePromises = [];
+        zip.forEach((relativePath, zipEntry) => {
+            // Skip directories
+            if (zipEntry.dir) return;
+
+            // Skip hidden files, macOS artifacts, and resource forks
+            if (relativePath.startsWith('.') || relativePath.startsWith('__MACOSX') || relativePath.includes('/.') || relativePath.split('/').pop().startsWith('._')) return;
+
+            // Check file extension
+            const ext = '.' + relativePath.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(ext)) {
+                skippedCount++;
+                return;
+            }
+
+            filePromises.push(
+                zipEntry.async('string').then(content => {
+                    let cleanPath = relativePath;
+                    importedFiles.push({ name: cleanPath, content: content });
+                })
+            );
+        });
+
+        await Promise.all(filePromises);
+
+        if (importedFiles.length === 0) {
+            updateStatus('No supported files found in ZIP.', 'error');
+            return;
+        }
+
+        // Strip common root directory if present
+        // e.g., "my-extension/manifest.json" -> "manifest.json"
+        if (importedFiles.length > 1) {
+            const firstSlash = importedFiles[0].name.indexOf('/');
+            if (firstSlash > 0) {
+                const commonPrefix = importedFiles[0].name.substring(0, firstSlash + 1);
+                const allSharePrefix = importedFiles.every(f => f.name.startsWith(commonPrefix));
+                if (allSharePrefix) {
+                    importedFiles.forEach(f => {
+                        f.name = f.name.substring(commonPrefix.length);
+                    });
+                    // Remove any files that became empty-named after stripping
+                    const filtered = importedFiles.filter(f => f.name.length > 0);
+                    importedFiles.length = 0;
+                    importedFiles.push(...filtered);
+                }
+            }
+        }
+
+        // File count guard
+        if (importedFiles.length > 500) {
+            updateStatus('ZIP contains too many files. Maximum is 500 files.', 'error');
+            return;
+        }
+
+        // Determine merge or create new project
+        if (currentProjectId && generatedFiles.length > 0) {
+            // Merge into existing project
+            importedFiles.forEach(imported => {
+                const existingIndex = generatedFiles.findIndex(f => f.name === imported.name);
+                if (existingIndex !== -1) {
+                    generatedFiles[existingIndex].content = imported.content;
+                } else {
+                    generatedFiles.push(imported);
+                }
+            });
+        } else {
+            // Create new project
+            conversationHistory = [];
+            generatedFiles = importedFiles;
+            attachedFilesData = [];
+            undoStack = [];
+            lastEditDiffs = [];
+            selectedFileForEdit = null;
+            isManualEditMode = false;
+
+            // Auto-name from manifest.json if present
+            const manifest = importedFiles.find(f => f.name === 'manifest.json');
+            if (manifest) {
+                try {
+                    const parsed = JSON.parse(manifest.content);
+                    if (parsed.name) {
+                        const projectName = parsed.name.startsWith('__MSG_') ? zipFile.name.replace('.zip', '') : parsed.name;
+                        currentProjectId = await db.projects.add({
+                            name: projectName,
+                            files: generatedFiles,
+                            conversationHistory: [],
+                            selectedModelId: selectedModel?.id || null,
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        });
+                    }
+                } catch (e) {
+                    currentProjectId = await db.projects.add({
+                        name: zipFile.name.replace('.zip', ''),
+                        files: generatedFiles,
+                        conversationHistory: [],
+                        selectedModelId: selectedModel?.id || null,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    });
+                }
+            } else {
+                currentProjectId = await db.projects.add({
+                    name: zipFile.name.replace('.zip', ''),
+                    files: generatedFiles,
+                    conversationHistory: [],
+                    selectedModelId: selectedModel?.id || null,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                });
+            }
+        }
+
+        displayGeneratedFiles(generatedFiles);
+        await saveProjectToDb();
+        await loadProjectList();
+        updateButtonStates();
+
+        const skippedMsg = skippedCount > 0 ? ` (${skippedCount} binary files skipped)` : '';
+        updateStatus(`Imported ${importedFiles.length} files from ZIP${skippedMsg}`, 'success');
+
+    } catch (error) {
+        console.error('ZIP import error:', error);
+        updateStatus(`Failed to import ZIP: ${error.message}`, 'error');
+    }
+}
+
 async function loadLastProject() {
     let lastProject = await db.projects.orderBy('updatedAt').reverse().first();
 
@@ -4363,6 +4516,19 @@ function setupEventListeners() {
 
     if (domElements.importFilesInput) {
         domElements.importFilesInput.addEventListener('change', importFiles);
+    }
+
+    const importZipButton = document.getElementById('import-zip-button');
+    const importZipInput = document.getElementById('import-zip-input');
+
+    if (importZipButton && importZipInput) {
+        importZipButton.addEventListener('click', () => {
+            importZipInput.click();
+        });
+        importZipInput.addEventListener('change', () => {
+            importFromZip();
+        });
+        console.log("Attached listeners to importZipButton and importZipInput");
     }
 
     updateButtonStates(); // Initial button state update
