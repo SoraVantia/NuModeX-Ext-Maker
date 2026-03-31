@@ -12,6 +12,8 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 
 **Firefox Add-ons:** https://addons.mozilla.org/firefox/addon/numodex-ext-maker/
 
+**Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
+
 ## Funcionalidades
 
 - Geracao de extensoes de navegador com IA (Manifest V3)
@@ -28,6 +30,7 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 - Copie o conteudo dos ficheiros para a area de transferencia com um clique
 - Visualizador de codigo com realce de sintaxe e arvore de ficheiros integrados
 - Download ZIP de extensoes geradas com um clique
+- Importar de ZIP. Carregue extensoes de navegador ou sites existentes de um arquivo ZIP para visualizar e editar com IA
 - Suporte de multiplos projetos. Crie, renomeie, alterne entre e elimine projetos
 - Nomeacao automatica. Os projetos sao automaticamente nomeados a partir do manifest da extensao gerada
 - Persistencia de projetos. O seu trabalho e guardado automaticamente e restaurado ao reabrir
