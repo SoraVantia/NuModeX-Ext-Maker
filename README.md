@@ -12,6 +12,8 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 
 **Firefox Add-ons:** https://addons.mozilla.org/firefox/addon/numodex-ext-maker/
 
+**Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
+
 ## Features
 
 - AI-powered browser extension generation (Manifest V3)
@@ -28,6 +30,7 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 - Copy file content to clipboard with one click
 - Built-in syntax-highlighted code viewer and file tree
 - One-click ZIP download of generated extensions
+- Import from ZIP. Load existing browser extensions or websites from a ZIP file to view and edit with AI
 - Multiple project support. Create, rename, switch between, and delete projects
 - Auto-naming. Projects are automatically named from the generated extension's manifest
 - Project persistence. Your work is saved automatically and restored on reopen
