@@ -14,6 +14,8 @@ Un constructor de extensiones de navegador Manifest V3 y sitios web estaticos de
 
 **Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
 
+**Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
+
 ## Caracteristicas
 
 - Generacion de extensiones de navegador con IA (Manifest V3)
