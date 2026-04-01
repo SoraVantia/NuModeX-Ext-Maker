@@ -14,6 +14,8 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 
 **Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
 
+**Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
+
 ## Features
 
 - AI-powered browser extension generation (Manifest V3)
