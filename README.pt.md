@@ -14,6 +14,8 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 
 **Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
 
+**Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
+
 ## Funcionalidades
 
 - Geracao de extensoes de navegador com IA (Manifest V3)
