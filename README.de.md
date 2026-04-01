@@ -14,6 +14,8 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 
 **Edge Add-ons:** https://microsoftedge.microsoft.com/addons/detail/jkdimfdgngcachpaggijnegdmmokdhkc
 
+**Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
+
 ## Funktionen
 
 - KI-gestützte Browsererweiterungsgenerierung (Manifest V3)
