@@ -16,6 +16,8 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 
 **Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
 
+**Chrome Web Store:** https://chromewebstore.google.com/detail/numodex-ext-maker/amkcpiiepjfmcichnkniiabhdcieidpf
+
 ## Features
 
 - AI-powered browser extension generation (Manifest V3)
