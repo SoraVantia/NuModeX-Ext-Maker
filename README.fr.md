@@ -16,6 +16,8 @@ Un constructeur d'extensions de navigateur Manifest V3 et de sites web statiques
 
 **Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
 
+**Chrome Web Store:** https://chromewebstore.google.com/detail/numodex-ext-maker/amkcpiiepjfmcichnkniiabhdcieidpf
+
 ## Fonctionnalites
 
 - Generation d'extensions de navigateur par IA (Manifest V3)
