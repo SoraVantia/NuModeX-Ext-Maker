@@ -16,6 +16,8 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 
 **Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
 
+**Chrome Web Store:** https://chromewebstore.google.com/detail/numodex-ext-maker/amkcpiiepjfmcichnkniiabhdcieidpf
+
 ## Funcionalidades
 
 - Geracao de extensoes de navegador com IA (Manifest V3)
