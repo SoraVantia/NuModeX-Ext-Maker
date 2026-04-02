@@ -16,6 +16,8 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 
 **Whale Store:** https://store.whale.naver.com/detail/jmbkjagjlhbnagganjfjeknboiagnnmk
 
+**Chrome Web Store:** https://chromewebstore.google.com/detail/numodex-ext-maker/amkcpiiepjfmcichnkniiabhdcieidpf
+
 ## Funktionen
 
 - KI-gestützte Browsererweiterungsgenerierung (Manifest V3)
