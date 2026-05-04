@@ -289,6 +289,14 @@ const AI_MODELS = [
         model: 'gemini-2.5-flash',
         maxOutput: 65536
     },
+    {
+        id: 'gemini-2.5-pro',
+        name: 'Gemini 2.5 Pro',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+        model: 'gemini-2.5-pro',
+        maxOutput: 65536
+    },
     // --- OpenAI ---
     {
         id: 'gpt-5.4',
@@ -340,6 +348,42 @@ const AI_MODELS = [
         model: 'gpt-4.1-nano',
         maxOutput: 32768
     },
+    {
+        id: 'gpt-5.5',
+        name: 'GPT-5.5',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-5.5-pro',
+        name: 'GPT-5.5 Pro',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.5-pro',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-5.4-mini',
+        name: 'GPT-5.4 Mini',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.4-mini',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-5.4-nano',
+        name: 'GPT-5.4 Nano',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.4-nano',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
     // --- Anthropic Claude ---
     {
         id: 'claude-opus-4-6',
@@ -364,6 +408,14 @@ const AI_MODELS = [
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-haiku-4-5',
         maxOutput: 8192
+    },
+    {
+        id: 'claude-opus-4-7',
+        name: 'Claude Opus 4.7',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-opus-4-7',
+        maxOutput: 128000
     },
     // --- On-device Models ---
     {
@@ -2365,7 +2417,7 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
     }
 
     // Only set temperature for models that support it.
-    // GPT-5 Mini and GPT-5.3 are reasoning models that reject custom temperature.
+    // Several GPT-5 family reasoning variants reject custom temperature; supportsTemperature: false on those entries.
     if (selectedModel.supportsTemperature !== false) {
         body.temperature = isGenerationRequest ? 0.3 : 0.7;
     }
