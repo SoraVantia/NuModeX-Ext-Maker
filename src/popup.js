@@ -258,6 +258,14 @@ RULES:
 const AI_MODELS = [
     // --- Google Gemini ---
     {
+        id: 'gemini-3.5-flash',
+        name: 'Gemini 3.5 Flash',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
+        model: 'gemini-3.5-flash',
+        maxOutput: 65536
+    },
+    {
         id: 'gemini-3.1-pro-preview',
         name: 'Gemini 3.1 Pro',
         provider: 'google',
@@ -299,20 +307,20 @@ const AI_MODELS = [
     },
     // --- OpenAI ---
     {
+        id: 'gpt-5.4-pro',
+        name: 'GPT-5.4 Pro',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.4-pro',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
         id: 'gpt-5.4',
         name: 'GPT-5.4',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-5.4',
-        maxOutput: 128000
-    },
-    {
-        id: 'gpt-5.3-chat-latest',
-        name: 'GPT-5.3 Instant',
-        provider: 'openai',
-        endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-5.3-chat-latest',
-        supportsTemperature: false,
         maxOutput: 128000
     },
     {
@@ -386,6 +394,15 @@ const AI_MODELS = [
     },
     // --- Anthropic Claude ---
     {
+        id: 'claude-opus-4-8',
+        name: 'Claude Opus 4.8',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-opus-4-8',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
         id: 'claude-opus-4-6',
         name: 'Claude Opus 4.6',
         provider: 'anthropic',
@@ -407,7 +424,7 @@ const AI_MODELS = [
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-haiku-4-5',
-        maxOutput: 8192
+        maxOutput: 64000
     },
     {
         id: 'claude-opus-4-7',
