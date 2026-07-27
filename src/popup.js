@@ -19,7 +19,10 @@ let apiKey = '';
 let conversationHistory = []; // Structure: [{ role: 'user'/'model', parts: [{text: '...'}, {inlineData: {mimeType: '...', data: '...'}}] }]
 let attachedFilesData = []; // Array of { name: string, type: string, base64: string }
 let generatedFiles = []; // Array of { name: string, content: string }
-let selectedModel = null; // Selected AI model
+// Written only by selectModel() and clearModelSelection(). A direct assignment desyncs the
+// dropdown label from the real selection, and saveApiKey resolves the key slot from
+// selectedModel.provider — so a desync can write a user's key to the wrong provider.
+let selectedModel = null;
 let currentProjectId = null; // Tracks the active project in IndexedDB
 let selectedFileForEdit = null; // The filename currently selected in the tree
 let isManualEditMode = false;
@@ -62,7 +65,7 @@ let eulaCache = new Map(); // Cache loaded EULA content by language code
 let eulaAcceptanceStatus = null; // Cache EULA acceptance status
 let pendingEulaAction = null; // Store action to perform after EULA acceptance
 
-// System Prompt (embedded locally — previously fetched from backend)
+// System Prompt
 const SYSTEM_PROMPT = `You are an expert software developer named NuModeX Ext Maker specializing in creating Google Chrome extensions using Manifest V3.
 Your task is to generate the complete set of files required for a functional Chrome extension and return the files in a JSON object with a 'files' array containing objects with 'name' and 'content' properties based on the user's request provided in the preceding conversation history.
 OUTPUT FORMAT:
@@ -256,13 +259,31 @@ RULES:
 
 // AI Models Configuration
 const AI_MODELS = [
+    // Google puts the model in the endpoint path, so endpoint is authoritative here and
+    // model is carried only for shape parity with the other providers — callGeminiAPI never reads it.
     // --- Google Gemini ---
+    {
+        id: 'gemini-3.6-flash',
+        name: 'Gemini 3.6 Flash',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+        model: 'gemini-3.6-flash',
+        maxOutput: 65536
+    },
     {
         id: 'gemini-3.5-flash',
         name: 'Gemini 3.5 Flash',
         provider: 'google',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
         model: 'gemini-3.5-flash',
+        maxOutput: 65536
+    },
+    {
+        id: 'gemini-3.5-flash-lite',
+        name: 'Gemini 3.5 Flash Lite',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent',
+        model: 'gemini-3.5-flash-lite',
         maxOutput: 65536
     },
     {
@@ -289,29 +310,31 @@ const AI_MODELS = [
         model: 'gemini-3.1-flash-lite',
         maxOutput: 65536
     },
-    {
-        id: 'gemini-2.5-flash',
-        name: 'Gemini 2.5 Flash',
-        provider: 'google',
-        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-        model: 'gemini-2.5-flash',
-        maxOutput: 65536
-    },
-    {
-        id: 'gemini-2.5-pro',
-        name: 'Gemini 2.5 Pro',
-        provider: 'google',
-        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
-        model: 'gemini-2.5-pro',
-        maxOutput: 65536
-    },
     // --- OpenAI ---
     {
-        id: 'gpt-5.4-pro',
-        name: 'GPT-5.4 Pro',
+        id: 'gpt-5.6-sol',
+        name: 'GPT-5.6 Sol',
         provider: 'openai',
         endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-5.4-pro',
+        model: 'gpt-5.6-sol',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-5.6-terra',
+        name: 'GPT-5.6 Terra',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.6-terra',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-5.6-luna',
+        name: 'GPT-5.6 Luna',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-5.6-luna',
         supportsTemperature: false,
         maxOutput: 128000
     },
@@ -366,15 +389,6 @@ const AI_MODELS = [
         maxOutput: 128000
     },
     {
-        id: 'gpt-5.5-pro',
-        name: 'GPT-5.5 Pro',
-        provider: 'openai',
-        endpoint: 'https://api.openai.com/v1/chat/completions',
-        model: 'gpt-5.5-pro',
-        supportsTemperature: false,
-        maxOutput: 128000
-    },
-    {
         id: 'gpt-5.4-mini',
         name: 'GPT-5.4 Mini',
         provider: 'openai',
@@ -393,6 +407,24 @@ const AI_MODELS = [
         maxOutput: 128000
     },
     // --- Anthropic Claude ---
+    {
+        id: 'claude-opus-5',
+        name: 'Claude Opus 5',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-opus-5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'claude-sonnet-5',
+        name: 'Claude Sonnet 5',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-sonnet-5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
     {
         id: 'claude-opus-4-8',
         name: 'Claude Opus 4.8',
@@ -1347,6 +1379,9 @@ async function saveCustomModel() {
             return;
         }
 
+        // Note whether the custom model is the current selection before we replace it
+        const wasCustomSelected = selectedModel?.id === 'custom-local';
+
         // Remove any existing custom model from the array
         const existingIndex = AI_MODELS.findIndex(m => m.id === 'custom-local');
         if (existingIndex !== -1) AI_MODELS.splice(existingIndex, 1);
@@ -1355,12 +1390,18 @@ async function saveCustomModel() {
         AI_MODELS.push({
             id: 'custom-local',
             name: `Custom: ${modelName}`,
+            // 'openai' means the wire format, not the vendor — custom endpoints speak chat-completions.
             provider: 'openai',
             endpoint: endpoint,
             model: modelName,
             isCustom: true,
             customApiKey: customApiKey
         });
+
+        // Re-point the selection at the new object so it doesn't keep the removed one
+        if (wasCustomSelected) {
+            selectModel(AI_MODELS.find(m => m.id === 'custom-local'));
+        }
 
         if (domElements.deleteCustomModelButton) domElements.deleteCustomModelButton.disabled = false;
         updateStatus(getTranslatedMessage('customModelSaved') || 'Custom model saved.', 'success', domElements.customModelStatus);
@@ -1386,7 +1427,7 @@ function deleteCustomModel() {
 
         // If the custom model was currently selected, deselect it
         if (selectedModel && selectedModel.id === 'custom-local') {
-            selectedModel = null;
+            clearModelSelection();
         }
 
         updateStatus(getTranslatedMessage('customModelDeleted') || 'Custom model deleted.', 'success', domElements.customModelStatus);
@@ -1686,6 +1727,10 @@ function setupCombobox() {
         domElements.modelDropdown.classList.remove('show');
         domElements.modelDropdownToggle.classList.remove('expanded');
         domElements.modelSearchInput.setAttribute('aria-expanded', 'false');
+        // Re-derive the displayed text from state — typing to filter never assigns a model
+        if (domElements.modelSearchInput) {
+            domElements.modelSearchInput.value = selectedModel ? selectedModel.name : '';
+        }
         currentHighlight = -1;
     }
 
@@ -1802,6 +1847,8 @@ function saveApiKey() {
         apiKey = newApiKey;
         const saveKeyName = getApiKeyStorageName(selectedModel?.provider);
         if (!saveKeyName) { updateStatus('Please select a cloud model first.', 'error', domElements.apiKeyStatus); return; }
+        // storage.local, never storage.sync — sync would replicate API keys across the user's
+        // devices through Google's servers.
         chrome.storage.local.set({ [saveKeyName]: apiKey }, () => {
             if (chrome.runtime.lastError) {
                 console.error("saveApiKey: Error saving API key:", chrome.runtime.lastError.message);
@@ -2167,7 +2214,6 @@ function addMessageToChatDOM(sender, text, images = []) {
                     finalCode = finalCode.replace(/^\n+|\n+$/g, ''); // Trim leading/trailing newlines from code itself
 
                     const preElement = document.createElement('pre');
-                     // Add some default styling; can be overridden by prism.css
                     preElement.style.margin = "0.5em 0";
                     preElement.style.borderRadius = "4px";
 
@@ -2231,9 +2277,8 @@ function addMessageToChatDOM(sender, text, images = []) {
 
 // --- API Interaction ---
 async function callAPI(isGenerationRequest, systemPromptOverride = null) {
-    // API key validation is now handled inside each provider's call function.
-    // On-device models don't need a key. Custom models use customApiKey.
-    // Skip the pre-check for on-device and custom models.
+    // Pre-flight so a missing key opens the settings modal instead of failing mid-request.
+    // on-device needs no key; custom models carry their own on the model object.
     if (selectedModel && selectedModel.provider !== 'on-device' && !selectedModel.isCustom) {
         const keyName = getApiKeyStorageName(selectedModel.provider);
         if (keyName) {
@@ -2428,13 +2473,14 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
         messages: messages,
     };
 
-    // Set max_tokens for cloud models only — custom/local models may have lower limits
+    // max_completion_tokens, not max_tokens: the GPT-5 family rejects the older name outright.
+    // Custom endpoints get neither — self-hosted servers may not accept a limit at all.
     if (!selectedModel.isCustom) {
-        body.max_tokens = isGenerationRequest ? (selectedModel.maxOutput || 32768) : 8192;
+        body.max_completion_tokens = isGenerationRequest ? (selectedModel.maxOutput || 32768) : 8192;
     }
 
-    // Only set temperature for models that support it.
-    // Several GPT-5 family reasoning variants reject custom temperature; supportsTemperature: false on those entries.
+    // Reasoning models 400 on a non-default temperature. Read only here — the Anthropic path
+    // never sends temperature, so the flag is inert on those entries.
     if (selectedModel.supportsTemperature !== false) {
         body.temperature = isGenerationRequest ? 0.3 : 0.7;
     }
@@ -3156,7 +3202,7 @@ async function loadLastProject() {
         if (lastProject.selectedModelId) {
             // Restore selected model from AI_MODELS
             const model = AI_MODELS.find(m => m.id === lastProject.selectedModelId);
-            if (model) selectedModel = model;
+            if (model) selectModel(model);
         }
         if (generatedFiles.length > 0) {
             displayGeneratedFiles(generatedFiles);
@@ -3474,8 +3520,7 @@ function buildInlinedPreviewHTML() {
         return '<!-- ' + src + ' not found -->';
     });
 
-    // Replace image references with placeholder (images can't load in sandbox)
-    // Leave them as-is — they'll show broken image icons which is expected for a visual preview
+    // Images aren't inlined: srcdoc has no base URL, so relative src can't resolve. Broken icons are expected.
 
     return html;
 }
