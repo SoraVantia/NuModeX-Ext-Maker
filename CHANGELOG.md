@@ -2,6 +2,25 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.4.0] - 2026-07-27
+
+### Added
+- Gemini 3.6 Flash (Google).
+- Gemini 3.5 Flash Lite (Google).
+- GPT-5.6 Sol (OpenAI).
+- GPT-5.6 Terra (OpenAI).
+- GPT-5.6 Luna (OpenAI).
+- Claude Opus 5 (Anthropic).
+- Claude Sonnet 5 (Anthropic).
+
+### Removed
+- GPT-5.4 Pro and GPT-5.5 Pro (not supported on the chat completions endpoint).
+- Gemini 2.5 Flash and Gemini 2.5 Pro (no longer available to new users; Google has retired the Gemini 2.5 generation).
+
+### Fixed
+- OpenAI requests now use the `max_completion_tokens` parameter, restoring GPT-5 family models that were failing with a parameter error.
+- Fixed a bug where the model shown in the selector could differ from the model actually used, which could cause an API key to be saved to the wrong provider's settings.
+
 ## [2.3.0] - 2026-06-25
 
 ### Added
