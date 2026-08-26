@@ -32,13 +32,13 @@ Un constructeur d'extensions de navigateur Manifest V3 et de sites web statiques
 - Affichage des modifications. Comparez les differences avant/apres en vue unifiee ou cote a cote
 - Apercu en direct. Visualisez un apercu de votre extension generee dans un iframe isole
 - Copiez le contenu des fichiers dans le presse-papiers en un clic
-- Visionneuse de code avec coloration syntaxique et arborescence de fichiers integrees
+- Visionneuse de code et arborescence de fichiers integrees
 - Telechargement ZIP des extensions generees en un clic
 - Importer depuis ZIP. Chargez des extensions de navigateur ou des sites web existants depuis un fichier ZIP pour les visualiser et les modifier avec l'IA
 - Support de projets multiples. Creez, renommez, basculez entre et supprimez des projets
 - Nommage automatique. Les projets sont automatiquement nommes a partir du manifest de l'extension generee
 - Persistance des projets. Votre travail est sauvegarde automatiquement et restaure a la reouverture
-- Raccourcis clavier. Entree pour envoyer, Maj+Entree pour nouvelle ligne, Ctrl/Cmd+Entree pour construire l'extension, Ctrl/Cmd+Maj+Entree pour construire le site web
+- Raccourcis clavier. Entree pour envoyer, Shift+Entree pour nouvelle ligne, Ctrl/Cmd+Entree pour construire l'extension, Ctrl/Cmd+Shift+Entree pour construire le site web
 - Detection du mode sombre systeme. S'adapte automatiquement a la preference de votre OS au premier lancement
 - Bouton de basculement du mode sombre pour le changement manuel
 - Support multi-navigateur. Construisez pour Chrome, Edge et Firefox
@@ -77,15 +77,16 @@ graph LR
 ## Pour Commencer
 
 1. Acceptez les Conditions d'Utilisation (premier lancement).
-2. Entrez votre cle API de votre fournisseur d'IA cloud dans les Parametres.
-3. Selectionnez un modele, decrivez ce que vous souhaitez et cliquez sur "Construire l'Extension" ou "Construire le Site Web".
-4. Telechargez les fichiers generes en ZIP et chargez-les dans votre navigateur.
+2. Choisissez un modele dans le menu deroulant. Les modeles sur l'appareil ne necessitent aucune cle API, mais ne permettent que le chat et l'edition, pas la creation.
+3. Entrez votre cle API de votre fournisseur d'IA cloud dans les Parametres.
+4. Decrivez ce que vous souhaitez et cliquez sur "Créer l'extension" ou "Construire le site web".
+5. Telechargez les fichiers generes en ZIP et chargez-les dans votre navigateur.
 
 Pour des instructions detaillees de configuration, la configuration de l'IA embarquee, le depannage et les conseils, consultez le [Guide de Demarrage](getting-started-fr-3-26-2026.md).
 
 ## Cles API
 
-Vous avez besoin de votre propre cle API pour utiliser cette extension. Obtenez-en une aupres de votre fournisseur cloud. Les cles API sont stockees localement dans votre navigateur et ne sont jamais envoyees a SoraVantia GK ni a un tiers.
+Vous avez besoin de votre propre cle API pour utiliser un fournisseur d'IA cloud. Les modeles sur l'appareil ne necessitent aucune cle API, mais ne permettent que le chat et l'edition, pas la creation. Obtenez une cle aupres du fournisseur choisi. Les cles API sont stockees localement dans votre navigateur et ne sont jamais envoyees a SoraVantia GK ni a un tiers.
 
 ## Langues
 
