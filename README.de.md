@@ -32,13 +32,13 @@ Ein Manifest V3 Browsererweiterungs- und statischer Website-Builder von SoraVant
 - Änderungen anzeigen. Vergleichen Sie Vorher-Nachher-Unterschiede in einheitlicher oder nebeneinanderliegender Ansicht
 - Live-Vorschau. Sehen Sie eine visuelle Vorschau Ihrer generierten Erweiterung in einem isolierten iframe
 - Dateiinhalte mit einem Klick in die Zwischenablage kopieren
-- Integrierter syntaxhervorgehobener Code-Viewer und Dateibaum
+- Integrierter Code-Viewer und Dateibaum
 - Ein-Klick-ZIP-Download generierter Erweiterungen
 - Aus ZIP importieren. Laden Sie bestehende Browsererweiterungen oder Websites aus einer ZIP-Datei, um sie mit KI anzuzeigen und zu bearbeiten
 - Mehrfachprojekt-Unterstützung. Projekte erstellen, umbenennen, wechseln und löschen
 - Auto-Benennung. Projekte werden automatisch nach dem Manifest der generierten Erweiterung benannt
 - Projektpersistenz. Ihre Arbeit wird automatisch gespeichert und beim erneuten Öffnen wiederhergestellt
-- Tastaturkürzel. Enter zum Senden, Shift+Enter für neue Zeile, Ctrl/Cmd+Enter zum Erstellen einer Erweiterung, Ctrl/Cmd+Shift+Enter zum Erstellen einer Website
+- Tastaturkürzel. Enter zum Senden, Shift+Enter für neue Zeile, Strg/Cmd+Enter zum Erstellen einer Erweiterung, Strg/Cmd+Shift+Enter zum Erstellen einer Website
 - System-Dunkelmodus-Erkennung. Passt sich beim ersten Start automatisch an Ihre OS-Einstellung an
 - Dunkelmodus-Umschalter für manuelles Wechseln
 - Multi-Browser-Unterstützung. Erstellen für Chrome, Edge und Firefox
@@ -77,15 +77,16 @@ graph LR
 ## Erste Schritte
 
 1. Akzeptieren Sie die Nutzungsbedingungen (erster Start).
-2. Geben Sie Ihren API-Schlüssel Ihres Cloud-KI-Anbieters in den Einstellungen ein.
-3. Wählen Sie ein Modell, beschreiben Sie, was Sie erstellen möchten, und klicken Sie auf "Erweiterung erstellen" oder "Website erstellen".
-4. Laden Sie die generierten Dateien als ZIP herunter und laden Sie sie in Ihrem Browser.
+2. Wählen Sie ein Modell aus dem Dropdown-Menü. On-Device-Modelle benötigen keinen API-Schlüssel, eignen sich aber nur für Chat und Bearbeitung, nicht zum Erstellen.
+3. Geben Sie Ihren API-Schlüssel Ihres Cloud-KI-Anbieters in den Einstellungen ein.
+4. Beschreiben Sie, was Sie erstellen möchten, und klicken Sie auf "Erweiterung erstellen" oder "Webseite erstellen".
+5. Laden Sie die generierten Dateien als ZIP herunter und laden Sie sie in Ihrem Browser.
 
 Für detaillierte Einrichtungsanweisungen, Konfiguration der geräteinternen KI, Fehlerbehebung und Tipps siehe [Erste-Schritte-Anleitung](getting-started-de-3-26-2026.md).
 
 ## API-Schlüssel
 
-Sie benötigen Ihren eigenen API-Schlüssel, um diese Erweiterung zu verwenden. Erhalten Sie einen von Ihrem Cloud-Anbieter. API-Schlüssel werden lokal in Ihrem Browser gespeichert und werden niemals an SoraVantia GK oder Dritte gesendet.
+Sie benötigen Ihren eigenen API-Schlüssel, um einen Cloud-KI-Anbieter zu verwenden. On-Device-Modelle benötigen keinen API-Schlüssel, eignen sich aber nur für Chat und Bearbeitung, nicht zum Erstellen. Erhalten Sie einen Schlüssel von Ihrem gewählten Anbieter. API-Schlüssel werden lokal in Ihrem Browser gespeichert und werden niemals an SoraVantia GK oder Dritte gesendet.
 
 ## Sprachen
 
