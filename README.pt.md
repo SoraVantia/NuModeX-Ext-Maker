@@ -32,7 +32,7 @@ Um construtor de extensoes de navegador Manifest V3 e sites estaticos da SoraVan
 - Ver alteracoes. Compare diferencas antes e depois em vista unificada ou lado a lado
 - Pre-visualizacao em direto. Veja uma pre-visualizacao da sua extensao gerada num iframe isolado
 - Copie o conteudo dos ficheiros para a area de transferencia com um clique
-- Visualizador de codigo com realce de sintaxe e arvore de ficheiros integrados
+- Visualizador de codigo e arvore de ficheiros integrados
 - Download ZIP de extensoes geradas com um clique
 - Importar de ZIP. Carregue extensoes de navegador ou sites existentes de um arquivo ZIP para visualizar e editar com IA
 - Suporte de multiplos projetos. Crie, renomeie, alterne entre e elimine projetos
@@ -77,15 +77,16 @@ graph LR
 ## Primeiros Passos
 
 1. Aceite os Termos de Servico (primeiro lancamento).
-2. Introduza a sua chave API do seu fornecedor de IA na nuvem nas Definicoes.
-3. Selecione um modelo, descreva o que pretende e clique em "Construir Extensao" ou "Construir Site".
-4. Descarregue os ficheiros gerados como ZIP e carregue-os no seu navegador.
+2. Escolha um modelo no menu suspenso. Os modelos no dispositivo nao precisam de chave API, mas so permitem chat e edicao, nao a criacao.
+3. Introduza a sua chave API do seu fornecedor de IA na nuvem nas Definicoes.
+4. Descreva o que pretende e clique em "Criar extensão" ou "Construir site".
+5. Descarregue os ficheiros gerados como ZIP e carregue-os no seu navegador.
 
 Para instrucoes detalhadas de configuracao, configuracao de IA no dispositivo, resolucao de problemas e dicas, consulte o [Guia de Inicio](getting-started-pt-3-26-2026.md).
 
 ## Chaves API
 
-Precisa da sua propria chave API para usar esta extensao. Obtenha uma do seu fornecedor na nuvem. As chaves API sao armazenadas localmente no seu navegador e nunca sao enviadas para a SoraVantia GK nem para terceiros.
+Precisa da sua propria chave API para usar um fornecedor de IA na nuvem. Os modelos no dispositivo nao precisam de chave API, mas so permitem chat e edicao, nao a criacao. Obtenha uma chave do fornecedor escolhido. As chaves API sao armazenadas localmente no seu navegador e nunca sao enviadas para a SoraVantia GK nem para terceiros.
 
 ## Idiomas
 
