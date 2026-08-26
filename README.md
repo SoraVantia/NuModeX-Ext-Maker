@@ -18,6 +18,8 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 
 **Chrome Web Store:** https://chromewebstore.google.com/detail/numodex-ext-maker/amkcpiiepjfmcichnkniiabhdcieidpf
 
+![NuModeX Ext Maker generating an interval timer extension, with the file tree and a live preview](assets/demo/numodex-ext-maker-gen-live-demo.gif)
+
 ## Features
 
 - AI-powered browser extension generation (Manifest V3)
@@ -32,7 +34,7 @@ A Manifest V3 browser extension and static website builder by SoraVantia GK. No 
 - View Changes. Compare before and after diffs in unified or side-by-side view
 - Live preview. See a visual preview of your generated extension in a sandboxed iframe
 - Copy file content to clipboard with one click
-- Built-in syntax-highlighted code viewer and file tree
+- Built-in code viewer and file tree
 - One-click ZIP download of generated extensions
 - Import from ZIP. Load existing browser extensions or websites from a ZIP file to view and edit with AI
 - Multiple project support. Create, rename, switch between, and delete projects
@@ -77,15 +79,16 @@ graph LR
 ## Getting Started
 
 1. Accept the Terms of Service (first launch).
-2. Enter your API key from your cloud AI provider in Settings.
-3. Select a model, describe what you want, and click "Build Extension" or "Build Website".
-4. Download the generated files as ZIP and load them in your browser.
+2. Select an AI model from the dropdown menu. On-device models need no API key, but can only chat and edit, not build.
+3. Enter your API key from your chosen AI provider in Settings.
+4. Describe what you want, and click "Build Extension" or "Build Website".
+5. Download the generated files as ZIP and load them in your browser.
 
 For detailed setup instructions, on-device AI configuration, troubleshooting, and tips, see [Getting Started](getting-started-en-3-26-2026.md).
 
 ## API Keys
 
-You need your own API key to use this extension. Get one from your cloud provider. API keys are stored locally in your browser and are never sent to SoraVantia GK or any third party.
+You need your own API key to use a cloud AI provider. On-device models need no API key, but can only chat and edit, not build. Get a key from your chosen provider. API keys are stored locally in your browser and are never sent to SoraVantia GK or any third party.
 
 ## Languages
 
