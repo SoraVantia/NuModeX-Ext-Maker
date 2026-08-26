@@ -2,6 +2,16 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.5.0] - 2026-08-22
+
+### Added
+- Gemini 3.7 Flash (Google).
+- Claude Fable 5 (Anthropic).
+
+### Fixed
+- API keys could be saved under, or deleted from, the wrong provider when a custom model was selected. Keys now always resolve to the provider they were entered for.
+- Google requests now send the API key in the `x-goog-api-key` header rather than the request URL, so it is no longer exposed in server and proxy logs.
+
 ## [2.4.0] - 2026-07-27
 
 ### Added
