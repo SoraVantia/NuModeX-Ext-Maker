@@ -32,7 +32,7 @@ Un constructor de extensiones de navegador Manifest V3 y sitios web estaticos de
 - Ver cambios. Compara diferencias antes y despues en vista unificada o lado a lado
 - Vista previa en vivo. Ve una vista previa visual de tu extension generada en un iframe aislado
 - Copia el contenido de archivos al portapapeles con un clic
-- Visor de codigo con resaltado de sintaxis y arbol de archivos integrado
+- Visor de codigo y arbol de archivos integrado
 - Descarga ZIP de extensiones generadas con un clic
 - Importar desde ZIP. Carga extensiones de navegador o sitios web existentes desde un archivo ZIP para ver y editar con IA
 - Soporte de multiples proyectos. Crea, renombra, cambia entre y elimina proyectos
@@ -77,15 +77,16 @@ graph LR
 ## Primeros Pasos
 
 1. Acepta los Terminos de Servicio (primer inicio).
-2. Ingresa tu clave API de tu proveedor de IA en la nube en Configuracion.
-3. Selecciona un modelo, describe lo que quieres y haz clic en "Construir Extension" o "Construir Sitio Web".
-4. Descarga los archivos generados como ZIP y cargalos en tu navegador.
+2. Elige un modelo del menu desplegable. Los modelos en el dispositivo no necesitan clave API, pero solo sirven para chat y edicion, no para crear.
+3. Ingresa tu clave API de tu proveedor de IA en la nube en Configuracion.
+4. Describe lo que quieres y haz clic en "Crear extensión" o "Construir sitio web".
+5. Descarga los archivos generados como ZIP y cargalos en tu navegador.
 
 Para instrucciones detalladas de configuracion, configuracion de IA en el dispositivo, solucion de problemas y consejos, consulta la [Guia de Inicio](getting-started-es-3-26-2026.md).
 
 ## Claves API
 
-Necesitas tu propia clave API para usar esta extension. Obten una de tu proveedor en la nube. Las claves API se almacenan localmente en tu navegador y nunca se envian a SoraVantia GK ni a terceros.
+Necesitas tu propia clave API para usar un proveedor de IA en la nube. Los modelos en el dispositivo no necesitan clave API, pero solo sirven para chat y edicion, no para crear. Obten una clave de tu proveedor elegido. Las claves API se almacenan localmente en tu navegador y nunca se envian a SoraVantia GK ni a terceros.
 
 ## Idiomas
 
