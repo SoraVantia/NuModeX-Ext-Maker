@@ -32,7 +32,7 @@ Un costruttore di estensioni del browser Manifest V3 e siti web statici di SoraV
 - Visualizza modifiche. Confronta le differenze prima e dopo in vista unificata o affiancata
 - Anteprima dal vivo. Visualizza un'anteprima della tua estensione generata in un iframe isolato
 - Copia il contenuto dei file negli appunti con un clic
-- Visualizzatore di codice con evidenziazione della sintassi e albero dei file integrati
+- Visualizzatore di codice e albero dei file integrati
 - Download ZIP delle estensioni generate con un clic
 - Importa da ZIP. Carica estensioni del browser o siti web esistenti da un file ZIP per visualizzare e modificare con l'IA
 - Supporto progetti multipli. Crea, rinomina, passa da uno all'altro ed elimina progetti
@@ -77,15 +77,16 @@ graph LR
 ## Per Iniziare
 
 1. Accetta i Termini di Servizio (primo avvio).
-2. Inserisci la tua chiave API del tuo fornitore di IA cloud nelle Impostazioni.
-3. Seleziona un modello, descrivi cosa vuoi costruire e clicca su "Costruisci Estensione" o "Costruisci Sito Web".
-4. Scarica i file generati come ZIP e caricali nel tuo browser.
+2. Scegli un modello dal menu a tendina. I modelli sul dispositivo non richiedono una chiave API, ma consentono solo chat e modifica, non la creazione.
+3. Inserisci la tua chiave API del tuo fornitore di IA cloud nelle Impostazioni.
+4. Descrivi cosa vuoi costruire e clicca su "Crea estensione" o "Costruisci sito web".
+5. Scarica i file generati come ZIP e caricali nel tuo browser.
 
 Per istruzioni dettagliate di configurazione, configurazione dell'IA su dispositivo, risoluzione dei problemi e consigli, consulta la [Guida Introduttiva](getting-started-it-3-26-2026.md).
 
 ## Chiavi API
 
-Hai bisogno della tua chiave API per usare questa estensione. Ottienine una dal tuo fornitore cloud. Le chiavi API sono archiviate localmente nel tuo browser e non vengono mai inviate a SoraVantia GK ne a terze parti.
+Hai bisogno della tua chiave API per usare un fornitore di IA cloud. I modelli sul dispositivo non richiedono una chiave API, ma consentono solo chat e modifica, non la creazione. Ottieni una chiave dal fornitore scelto. Le chiavi API sono archiviate localmente nel tuo browser e non vengono mai inviate a SoraVantia GK ne a terze parti.
 
 ## Lingue
 
