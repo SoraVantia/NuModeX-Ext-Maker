@@ -263,6 +263,14 @@ const AI_MODELS = [
     // model is carried only for shape parity with the other providers — callGeminiAPI never reads it.
     // --- Google Gemini ---
     {
+        id: 'gemini-3.7-flash',
+        name: 'Gemini 3.7 Flash',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent',
+        model: 'gemini-3.7-flash',
+        maxOutput: 65536
+    },
+    {
         id: 'gemini-3.6-flash',
         name: 'Gemini 3.6 Flash',
         provider: 'google',
@@ -422,6 +430,15 @@ const AI_MODELS = [
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-sonnet-5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'claude-fable-5',
+        name: 'Claude Fable 5',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-fable-5',
         supportsTemperature: false,
         maxOutput: 128000
     },
@@ -591,7 +608,10 @@ function getTranslatedMessage(key, substitutions) {
 
 function updateButtonStates() {
     const isOnDeviceModel = selectedModel && selectedModel.provider === 'on-device';
-    const hasApiKey = !!apiKey || isOnDeviceModel;
+    const isCustomModel = selectedModel && selectedModel.isCustom;
+    // Custom models carry their own key on the model object, so an empty apiKey global
+    // does not mean "no credential" for them.
+    const hasApiKey = !!apiKey || isOnDeviceModel || isCustomModel;
     const hasModel = !!selectedModel;
     const hasTextInInput = domElements.chatInputField ? domElements.chatInputField.value.trim() !== '' : false;
     const hasAttachedFiles = attachedFilesData.length > 0;
@@ -1182,7 +1202,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await initLocalization();
 
     // Show main app directly — no auth required
-    loadApiKey();
+    // No loadApiKey() here: selectedModel is null at this point, so there is no slot to
+    // resolve. selectModel loads the correct key on every path that selects a model.
     await loadCustomModel();
     loadSelectedModel();
     setupEventListeners();
@@ -1606,6 +1627,14 @@ function getApiKeyStorageName(provider) {
     }
 }
 
+// Custom models keep their key on the model object, not in a provider slot.
+function getKeySlotForModel(model) {
+    if (!model) return null;
+    if (model.isCustom) return null;
+    if (model.provider === 'on-device') return null;
+    return getApiKeyStorageName(model.provider);
+}
+
 function selectModel(model) {
     selectedModel = model;
     chrome.storage.local.set({ selectedAiModel: model.id });
@@ -1627,32 +1656,40 @@ function selectModel(model) {
 
     updateButtonStates();
 
-    // Update API key display for the selected provider (UI only)
-    if (model.provider !== 'on-device' && !model.isCustom) {
-        const keyName = getApiKeyStorageName(model.provider);
-        if (keyName) {
-            chrome.storage.local.get([keyName], (result) => {
-                apiKey = result[keyName] || '';
-                if (domElements.apiKeyInput) {
-                    domElements.apiKeyInput.value = apiKey;
-                }
-                if (domElements.deleteApiKeyButton) {
-                    domElements.deleteApiKeyButton.disabled = !apiKey;
-                }
-                updateButtonStates();
-            });
-        }
+    // Cleared synchronously; the callback drops its result if the selection changed.
+    const keyName = getKeySlotForModel(model);
+    apiKey = '';
+    if (domElements.apiKeyInput) domElements.apiKeyInput.value = '';
+    if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = true;
+    updateButtonStates();
+    if (keyName) {
+        chrome.storage.local.get([keyName], (result) => {
+            if (selectedModel !== model) return;
+            if (chrome.runtime.lastError) {
+                console.error('selectModel: error reading key —', chrome.runtime.lastError.message);
+                return;
+            }
+            apiKey = result[keyName] || '';
+            if (domElements.apiKeyInput) domElements.apiKeyInput.value = apiKey;
+            if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = !apiKey;
+            updateButtonStates();
+        });
     }
 }
 
 function clearModelSelection() {
     selectedModel = null;
     chrome.storage.local.remove('selectedAiModel');
-    
+
     // Update UI
     if (domElements.modelSearchInput) {
         domElements.modelSearchInput.value = '';
     }
+    // With no selection there is no slot, so no key belongs on screen. Cleared before
+    // updateButtonStates so the button state is not computed from the key being erased.
+    apiKey = '';
+    if (domElements.apiKeyInput) domElements.apiKeyInput.value = '';
+    if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = true;
     updateButtonStates();
 }
 
@@ -1805,7 +1842,9 @@ function setupCombobox() {
 // --- API Key Management ---
 function loadApiKey() {
     console.log("loadApiKey: Loading API key...");
-    const keyName = getApiKeyStorageName(selectedModel?.provider) || 'googleApiKey';
+    // No slot means no key to display — never guess a provider.
+    const keyName = getKeySlotForModel(selectedModel);
+    if (!keyName) return;
     chrome.storage.local.get([keyName], result => {
         if (chrome.runtime.lastError) {
             console.error("loadApiKey: Error loading API key from storage:", chrome.runtime.lastError.message);
@@ -1842,14 +1881,27 @@ function saveApiKey() {
         console.error("saveApiKey: apiKeyInput element not found.");
         return;
     }
+    // Why this selection has no provider slot. Shared by both branches below so the same
+    // selection always produces the same message, whether the field has text or not.
+    const noSlotMessage = () => {
+        if (selectedModel?.isCustom) return 'Custom model keys are managed in the Custom Model section below.';
+        if (selectedModel?.provider === 'on-device') return 'On-device models do not use an API key.';
+        return 'Please select a cloud model first.';
+    };
     const newApiKey = domElements.apiKeyInput.value.trim();
     if (newApiKey) {
+        const saveKeyName = getKeySlotForModel(selectedModel);
+        if (!saveKeyName) {
+            updateStatus(noSlotMessage(), 'error', domElements.apiKeyStatus);
+            return;
+        }
+        // Assigned only once saving is permitted, so a refused save leaves no typed secret
+        // in the global.
         apiKey = newApiKey;
-        const saveKeyName = getApiKeyStorageName(selectedModel?.provider);
-        if (!saveKeyName) { updateStatus('Please select a cloud model first.', 'error', domElements.apiKeyStatus); return; }
         // storage.local, never storage.sync — sync would replicate API keys across the user's
-        // devices through Google's servers.
-        chrome.storage.local.set({ [saveKeyName]: apiKey }, () => {
+        // devices through Google's servers. The value comes from newApiKey, not the global,
+        // so what is stored is what the user typed regardless of any other state.
+        chrome.storage.local.set({ [saveKeyName]: newApiKey }, () => {
             if (chrome.runtime.lastError) {
                 console.error("saveApiKey: Error saving API key:", chrome.runtime.lastError.message);
                 updateStatus("Error saving API key.", 'error', domElements.apiKeyStatus);
@@ -1873,12 +1925,16 @@ function saveApiKey() {
         });
     } else {
         apiKey = ''; // Clear the runtime API key
-        const clearKeyName = getApiKeyStorageName(selectedModel?.provider);
-        if (clearKeyName) chrome.storage.local.remove(clearKeyName, () => {
-            if (chrome.runtime.lastError) console.error("saveApiKey: Error removing API key:", chrome.runtime.lastError.message);
-            updateStatus('apiKeyMissing', 'error', domElements.apiKeyStatus); // Show missing in modal
-            console.log("saveApiKey: API key cleared from input and storage.");
-        });
+        const clearKeyName = getKeySlotForModel(selectedModel);
+        if (clearKeyName) {
+            chrome.storage.local.remove(clearKeyName, () => {
+                if (chrome.runtime.lastError) console.error("saveApiKey: Error removing API key:", chrome.runtime.lastError.message);
+                updateStatus('apiKeyMissing', 'error', domElements.apiKeyStatus); // Show missing in modal
+                console.log("saveApiKey: API key cleared from input and storage.");
+            });
+        } else {
+            updateStatus(noSlotMessage(), 'error', domElements.apiKeyStatus);
+        }
         updateButtonStates(); // Reflect that API key is now missing
     }
 }
@@ -1886,7 +1942,7 @@ function saveApiKey() {
 function deleteApiKey() {
     // Clear the stored key
     apiKey = '';
-    const keyName = getApiKeyStorageName(selectedModel?.provider);
+    const keyName = getKeySlotForModel(selectedModel);
     if (!keyName) return;
     chrome.storage.local.remove(keyName);
 
@@ -2402,9 +2458,13 @@ async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
         body.systemInstruction = { parts: [{ text: activeSystemPrompt }] };
     }
 
-    const response = await fetch(`${selectedModel.endpoint}?key=${currentApiKey}`, {
+    // Key in a header, not the URL: Google documents this form, and query strings reach server and proxy logs.
+    const response = await fetch(selectedModel.endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': currentApiKey
+        },
         body: JSON.stringify(body)
     });
 
