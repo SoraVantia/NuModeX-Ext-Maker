@@ -434,6 +434,15 @@ const AI_MODELS = [
         maxOutput: 128000
     },
     {
+        id: 'claude-fable-5-1',
+        name: 'Claude Fable 5.1',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-fable-5-1',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
         id: 'claude-fable-5',
         name: 'Claude Fable 5',
         provider: 'anthropic',
