@@ -2,6 +2,11 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.6.0] - 2026-09-02
+
+### Added
+- Claude Fable 5.1 (Anthropic).
+
 ## [2.5.0] - 2026-08-22
 
 ### Added
