@@ -2,6 +2,11 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.7.0] - 2026-09-05
+
+### Added
+- Gemini 3.8 Flash (Google).
+
 ## [2.6.0] - 2026-09-02
 
 ### Added
