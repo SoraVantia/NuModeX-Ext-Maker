@@ -263,6 +263,14 @@ const AI_MODELS = [
     // model is carried only for shape parity with the other providers — callGeminiAPI never reads it.
     // --- Google Gemini ---
     {
+        id: 'gemini-3.8-flash',
+        name: 'Gemini 3.8 Flash',
+        provider: 'google',
+        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
+        model: 'gemini-3.8-flash',
+        maxOutput: 65536
+    },
+    {
         id: 'gemini-3.7-flash',
         name: 'Gemini 3.7 Flash',
         provider: 'google',
