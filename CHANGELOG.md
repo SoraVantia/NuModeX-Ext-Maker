@@ -2,6 +2,11 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.8.0] - 2026-09-06
+
+### Added
+- GPT-6 Astra (OpenAI).
+
 ## [2.7.0] - 2026-09-05
 
 ### Added
