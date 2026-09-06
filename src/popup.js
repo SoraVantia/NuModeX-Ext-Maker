@@ -328,6 +328,15 @@ const AI_MODELS = [
     },
     // --- OpenAI ---
     {
+        id: 'gpt-6-astra',
+        name: 'GPT-6 Astra',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-6-astra',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
         id: 'gpt-5.6-sol',
         name: 'GPT-5.6 Sol',
         provider: 'openai',
