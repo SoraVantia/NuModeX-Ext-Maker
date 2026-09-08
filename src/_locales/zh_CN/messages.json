@@ -146,5 +146,9 @@
   "importInvalidJson": { "message": "无效的JSON文件。" },
   "importInvalidFormat": { "message": "此文件不是有效的NuModeX Ext Maker项目。" },
   "customModelPermissionDenied": { "message": "权限被拒绝。您必须允许访问此服务器才能使用它。" },
-  "generateWebsiteButton": { "message": "构建网站" }
+  "generateWebsiteButton": { "message": "构建网站" },
+  "newProjectTooltip": { "message": "新建项目" },
+  "projectActionsTooltip": { "message": "项目操作" },
+  "darkModeTooltip": { "message": "切换深色模式" },
+  "apiKeySourceLink": { "message": "获取 API 密钥" }
 }
