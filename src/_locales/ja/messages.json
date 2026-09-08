@@ -146,5 +146,9 @@
   "importInvalidJson": { "message": "無効なJSONファイルです。" },
   "importInvalidFormat": { "message": "このファイルは有効なNuModeX Ext Makerプロジェクトではありません。" },
   "customModelPermissionDenied": { "message": "許可が拒否されました。このサーバーを使用するにはアクセスを許可する必要があります。" },
-  "generateWebsiteButton": { "message": "ウェブサイトを構築" }
+  "generateWebsiteButton": { "message": "ウェブサイトを構築" },
+  "newProjectTooltip": { "message": "新規プロジェクト" },
+  "projectActionsTooltip": { "message": "プロジェクト操作" },
+  "darkModeTooltip": { "message": "ダークモードを切り替え" },
+  "apiKeySourceLink": { "message": "APIキーを取得" }
 }
