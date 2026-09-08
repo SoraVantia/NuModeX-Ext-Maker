@@ -2,6 +2,13 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.9.0] - 2026-09-06
+
+### Added
+- Tooltips on the header buttons.
+- A link to each provider's API key page, shown in Settings when a cloud
+  model is selected.
+
 ## [2.8.0] - 2026-09-06
 
 ### Added
