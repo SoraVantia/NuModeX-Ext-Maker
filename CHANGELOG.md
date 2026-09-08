@@ -9,6 +9,13 @@ All notable changes to NuModeX Ext Maker are documented here.
 - A link to each provider's API key page, shown in Settings when a cloud
   model is selected.
 
+### Changed
+- Rewrote the empty output pane so it says how to start a build, not only where generated files appear.
+
+### Fixed
+- Typing a bracket or parenthesis in the model search broke the filter, which then stopped updating until the text was cleared.
+- The help guide named buttons in English, or in words the interface does not use, in the eight non-English languages; each name now matches the button on screen.
+
 ## [2.8.0] - 2026-09-06
 
 ### Added
