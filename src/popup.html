@@ -29,9 +29,9 @@
                         <select id="project-selector">
                             <!-- Options populated dynamically -->
                         </select>
-                        <button id="new-project-button" title="New Project" class="header-icon-btn">+</button>
+                        <button id="new-project-button" title="New Project" data-i18n-title="newProjectTooltip" class="header-icon-btn">+</button>
                         <div class="project-actions-wrapper">
-                            <button id="project-actions-button" title="Project Actions" class="header-icon-btn">⋯</button>
+                            <button id="project-actions-button" title="Project Actions" data-i18n-title="projectActionsTooltip" class="header-icon-btn">⋯</button>
                             <div id="project-actions-menu" class="project-actions-dropdown">
                                 <button id="rename-project-button" class="dropdown-option" data-i18n="renameProjectButton">Rename</button>
                                 <button id="delete-project-button" class="dropdown-option project-delete-option" data-i18n="deleteProjectButton">Delete</button>
@@ -73,7 +73,7 @@
                         <option value="it" data-i18n="langItalian">Italiano</option>
                     </select>
                     <!-- Dark Mode Toggle Button -->
-                    <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
+                    <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode" data-i18n-title="darkModeTooltip">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" class="sun-icon">
                             <path d="M12 17.5q-2.3 0-3.9-1.6T6.5 12q0-2.3 1.6-3.9T12 6.5q2.3 0 3.9 1.6T17.5 12q0 2.3-1.6 3.9T12 17.5ZM12 16q1.45 0 2.475-1.025T15.5 12.5q0-1.45-1.025-2.475T12 9q-1.45 0-2.475 1.025T8.5 12q0 1.45 1.025 2.475T12 16Zm0-4Zm0 7q-.4 0-.775-.15T10.6 18.4l-1.45-1.45q-.275-.275-.425-.65T8.575 15.5H6.5q-.625 0-1.062-.438T5 14V10q0-.625.438-1.062T6.5 8.5h2.075q0-.425.15-.8t.425-.65L10.6 5.6q.275-.275.625-.425T12 5q.4 0 .775.15t.625.425l1.45 1.45q.275.275.425.65t.15.8H17.5q.625 0 1.062.438T19 10v4q0 .625-.438 1.062T17.5 15.5h-2.075q0 .425-.15.8t-.425.65l-1.45 1.45q-.25.25-.625.425T12 19Z"/>
                         </svg>
@@ -81,12 +81,12 @@
                             <path d="M12 21q-3.75 0-6.375-2.625T3 12q0-3.75 2.625-6.375T12 3q.2 0 .425.013t.575.062q-.9.8-1.4 1.975t-.5 2.45q0 2.25 1.575 3.825T16.5 12.9q1.275 0 2.45-.5t1.975-1.4q.05.35.063.575T21 12q0 3.75-2.625 6.375T12 21Z"/>
                         </svg>
                     </button>
-                    <button id="help-button" aria-label="Help Guide" data-i18n-aria="helpButtonLabel" title="Help Guide">
+                    <button id="help-button" aria-label="Help Guide" data-i18n-aria="helpButtonLabel" title="Help Guide" data-i18n-title="helpButtonLabel">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
                         </svg>
                     </button>
-                    <button id="settings-button" aria-label="Settings" data-i18n-aria="settingsLabel">
+                    <button id="settings-button" aria-label="Settings" data-i18n-aria="settingsLabel" title="Settings" data-i18n-title="settingsLabel">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.25 C14.34,2.09,14.19,2,14,2h-4c-0.19,0-0.34,0.09-0.4,0.25l-0.33,2.52c-0.59,0.24-1.12,0.56-1.62,0.94l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.27c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.8,11.06,4.78,11.37,4.78,11.69 c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22 l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.33,2.52c0.06,0.16,0.21,0.25,0.4,0.25h4c0.19,0,0.34-0.09,0.4-0.25l0.33-2.52 c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61 L19.14,12.94z M12,15.6c-1.98,0-3.6-1.61-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.61,3.6,3.6S13.98,15.6,12,15.6z"/>
                         </svg>
@@ -208,6 +208,7 @@
                     <h2 data-i18n="apiKeySectionTitle">API Key Configuration</h2>
                     <label for="api-key-input" data-i18n="apiKeyLabel">API Key:</label>
                     <input type="password" id="api-key-input">
+                    <span id="api-key-source-link" class="api-key-source-link" data-i18n="apiKeySourceLink" style="display: none;">Get an API key</span>
                     <button id="save-api-key-button" data-i18n="saveApiKeyButton">Save Key</button>
                     <button id="delete-api-key-button" data-i18n="deleteApiKeyButton">Delete Key</button>
                     <p id="api-key-status" class="status-message"></p>
