@@ -24,7 +24,7 @@
   "generateButton": { "message": "Build Extension" },
   "generatedFilesLabel": { "message": "Generated Files" },
   "codeViewerPlaceholder": { "message": "Select a file to view its content." },
-  "outputPanePlaceholder": { "message": "Start a conversation on the left to describe the extension you want to build. Generated files will appear here." },
+  "outputPanePlaceholder": { "message": "Select a model and add an API key in \"Settings\", then describe what you want to build and click \"Build Extension\" or \"Build Website\". Generated files will appear here." },
   "downloadZipButton": { "message": "Download All as ZIP" },
   "startOverButton": { "message": "Start Over" },
   "startOverConfirmation": { "message": "Interface cleared. Ready for a new extension." },
