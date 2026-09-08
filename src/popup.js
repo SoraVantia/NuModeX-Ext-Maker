@@ -257,6 +257,14 @@ RULES:
 - Do NOT include any explanatory text. Your ENTIRE response MUST be ONLY the JSON object.
 - No markdown fences. Output raw JSON only.`;
 
+// Where a user obtains a key, keyed by the storage slot getKeySlotForModel resolves —
+// not by provider, because a custom endpoint carries provider 'openai' as a wire format.
+const API_KEY_URLS = Object.freeze({
+    googleApiKey: 'https://aistudio.google.com/apikey',
+    openaiApiKey: 'https://platform.openai.com/api-keys',
+    anthropicApiKey: 'https://platform.claude.com/settings/keys'
+});
+
 // AI Models Configuration
 const AI_MODELS = [
     // Google puts the model in the endpoint path, so endpoint is authoritative here and
@@ -1265,6 +1273,7 @@ function cacheDomElements() {
         saveApiKeyButton: document.getElementById('save-api-key-button'),
         deleteApiKeyButton: document.getElementById('delete-api-key-button'),
         apiKeyStatus: document.getElementById('api-key-status'),
+        apiKeySourceLink: document.getElementById('api-key-source-link'),
         closeApiModalButton: document.getElementById('close-api-modal'),
         conversationDisplayArea: document.getElementById('conversation-display-area'),
         imagePreviewArea: document.getElementById('image-preview-area'),
@@ -1569,6 +1578,12 @@ function applyLocalization() {
         if (message) el.setAttribute('aria-label', message);
         else console.warn(`applyLocalization: No message found for key (data-i18n-aria): ${key}`);
     });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        const message = getTranslatedMessage(key);
+        if (message) el.setAttribute('title', message);
+        else console.warn(`applyLocalization: No message found for key (data-i18n-title): ${key}`);
+    });
     if (domElements.chatInputField) {
       domElements.chatInputField.placeholder = getTranslatedMessage('chatInputPlaceholder') || domElements.chatInputField.placeholder;
     }
@@ -1661,6 +1676,17 @@ function getKeySlotForModel(model) {
     return getApiKeyStorageName(model.provider);
 }
 
+// Shown only when a real provider key slot resolves. getKeySlotForModel returns null for
+// no selection, a custom endpoint and an on-device model, so one check covers all of B4.
+function updateApiKeySourceLink() {
+    const link = domElements.apiKeySourceLink;
+    if (!link) return;
+    const slot = getKeySlotForModel(selectedModel);
+    const url = slot ? API_KEY_URLS[slot] : null;
+    link.dataset.url = url || '';
+    link.style.display = url ? 'inline-block' : 'none';
+}
+
 function selectModel(model) {
     selectedModel = model;
     chrome.storage.local.set({ selectedAiModel: model.id });
@@ -1681,6 +1707,7 @@ function selectModel(model) {
     }
 
     updateButtonStates();
+    updateApiKeySourceLink();
 
     // Cleared synchronously; the callback drops its result if the selection changed.
     const keyName = getKeySlotForModel(model);
@@ -1717,6 +1744,7 @@ function clearModelSelection() {
     if (domElements.apiKeyInput) domElements.apiKeyInput.value = '';
     if (domElements.deleteApiKeyButton) domElements.deleteApiKeyButton.disabled = true;
     updateButtonStates();
+    updateApiKeySourceLink();
 }
 
 // --- Combobox Setup ---
@@ -1758,7 +1786,8 @@ function setupCombobox() {
 
             // Highlight matching text
             if (filter) {
-                const regex = new RegExp(`(${filter})`, 'gi');
+                const escaped = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`(${escaped})`, 'gi');
                 option.innerHTML = model.name.replace(regex, '<mark>$1</mark>');
             } else {
                 option.textContent = model.name;
@@ -1999,6 +2028,7 @@ function toggleApiKeySection() {
     domElements.apiKeySection.style.display = isHidden ? 'block' : 'none';
 
     if (isHidden) { // Modal is now visible
+        updateApiKeySourceLink();
         if (domElements.apiKeyInput) domElements.apiKeyInput.focus();
         // Update status within the modal
         if (domElements.apiKeyStatus) {
@@ -4427,6 +4457,14 @@ function setupEventListeners() {
         });
     }
 
+    // API key source link — URL comes from API_KEY_URLS via updateApiKeySourceLink, never from user input
+    if (domElements.apiKeySourceLink) {
+        domElements.apiKeySourceLink.addEventListener('click', () => {
+            const url = domElements.apiKeySourceLink.dataset.url;
+            if (url) chrome.tabs.create({ url });
+        });
+    }
+
     // Footer legal links
     const privacyLink = document.getElementById('privacy-policy-link');
     if (privacyLink) {
@@ -4438,7 +4476,7 @@ function setupEventListeners() {
     const termsLink = document.getElementById('terms-of-service-link');
     if (termsLink) {
         termsLink.addEventListener('click', () => {
-            chrome.tabs.create({ url: 'https://numodex.com/numodexextmaker/eula' });
+            chrome.tabs.create({ url: 'https://numodex.com/numodexextmaker/terms' });
         });
     }
 
