@@ -146,5 +146,9 @@
   "importInvalidJson": { "message": "유효하지 않은 JSON 파일입니다." },
   "importInvalidFormat": { "message": "이 파일은 유효한 NuModeX Ext Maker 프로젝트가 아닙니다." },
   "customModelPermissionDenied": { "message": "권한이 거부되었습니다. 이 서버를 사용하려면 접근을 허용해야 합니다." },
-  "generateWebsiteButton": { "message": "웹사이트 빌드" }
+  "generateWebsiteButton": { "message": "웹사이트 빌드" },
+  "newProjectTooltip": { "message": "새 프로젝트" },
+  "projectActionsTooltip": { "message": "프로젝트 작업" },
+  "darkModeTooltip": { "message": "다크 모드 전환" },
+  "apiKeySourceLink": { "message": "API 키 발급받기" }
 }
