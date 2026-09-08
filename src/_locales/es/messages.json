@@ -146,5 +146,9 @@
   "importInvalidJson": { "message": "Archivo JSON no válido." },
   "importInvalidFormat": { "message": "Este archivo no es un proyecto válido de NuModeX Ext Maker." },
   "customModelPermissionDenied": { "message": "Permiso denegado. Debe permitir el acceso a este servidor para usarlo." },
-  "generateWebsiteButton": { "message": "Construir sitio web" }
+  "generateWebsiteButton": { "message": "Construir sitio web" },
+  "newProjectTooltip": { "message": "Nuevo proyecto" },
+  "projectActionsTooltip": { "message": "Acciones del proyecto" },
+  "darkModeTooltip": { "message": "Alternar modo oscuro" },
+  "apiKeySourceLink": { "message": "Obtener una clave de API" }
 }
