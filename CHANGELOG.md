@@ -2,6 +2,13 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.10.0] - 2026-09-24
+
+### Added
+- Claude Opus 5.5 (Anthropic).
+- GPT-6 Sol (OpenAI).
+- GPT-6 Luna (OpenAI).
+
 ## [2.9.0] - 2026-09-06
 
 ### Added
