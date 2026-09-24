@@ -336,6 +336,24 @@ const AI_MODELS = [
     },
     // --- OpenAI ---
     {
+        id: 'gpt-6-sol',
+        name: 'GPT-6 Sol',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-6-sol',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'gpt-6-luna',
+        name: 'GPT-6 Luna',
+        provider: 'openai',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-6-luna',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
         id: 'gpt-6-astra',
         name: 'GPT-6 Astra',
         provider: 'openai',
@@ -440,6 +458,15 @@ const AI_MODELS = [
         maxOutput: 128000
     },
     // --- Anthropic Claude ---
+    {
+        id: 'claude-opus-5-5',
+        name: 'Claude Opus 5.5',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-opus-5-5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
     {
         id: 'claude-opus-5',
         name: 'Claude Opus 5',
