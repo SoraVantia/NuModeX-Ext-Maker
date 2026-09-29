@@ -265,6 +265,11 @@ const API_KEY_URLS = Object.freeze({
     anthropicApiKey: 'https://platform.claude.com/settings/keys'
 });
 
+// One output ceiling for chat turns on all three cloud providers. Thinking and
+// reasoning tokens come out of the same budget as the reply, so a model that
+// thinks hard can spend it before answering. Generation uses each model's maxOutput.
+const CHAT_MAX_TOKENS = 32000;
+
 // AI Models Configuration
 const AI_MODELS = [
     // Google puts the model in the endpoint path, so endpoint is authoritative here and
@@ -473,6 +478,15 @@ const AI_MODELS = [
         provider: 'anthropic',
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-opus-5',
+        supportsTemperature: false,
+        maxOutput: 128000
+    },
+    {
+        id: 'claude-sonnet-5-5',
+        name: 'Claude Sonnet 5.5',
+        provider: 'anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        model: 'claude-sonnet-5-5',
         supportsTemperature: false,
         maxOutput: 128000
     },
@@ -2526,7 +2540,7 @@ async function callGeminiAPI(isGenerationRequest, systemPromptOverride = null) {
         contents: payloadContents,
         generationConfig: {
             temperature: isGenerationRequest ? 0.3 : 0.7,
-            maxOutputTokens: isGenerationRequest ? (selectedModel.maxOutput || 65536) : 8192,
+            maxOutputTokens: isGenerationRequest ? (selectedModel.maxOutput || 65536) : CHAT_MAX_TOKENS,
         },
         safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
@@ -2619,7 +2633,7 @@ async function callOpenAIAPI(isGenerationRequest, systemPromptOverride = null) {
     // max_completion_tokens, not max_tokens: the GPT-5 family rejects the older name outright.
     // Custom endpoints get neither — self-hosted servers may not accept a limit at all.
     if (!selectedModel.isCustom) {
-        body.max_completion_tokens = isGenerationRequest ? (selectedModel.maxOutput || 32768) : 8192;
+        body.max_completion_tokens = isGenerationRequest ? (selectedModel.maxOutput || 32768) : CHAT_MAX_TOKENS;
     }
 
     // Reasoning models 400 on a non-default temperature. Read only here — the Anthropic path
@@ -2710,7 +2724,7 @@ async function callClaudeAPI(isGenerationRequest, systemPromptOverride = null) {
 
     const body = {
         model: selectedModel.model,
-        max_tokens: isGenerationRequest ? (selectedModel.maxOutput || 8192) : 8192,
+        max_tokens: isGenerationRequest ? (selectedModel.maxOutput || 8192) : CHAT_MAX_TOKENS,
         messages: messages
     };
 
