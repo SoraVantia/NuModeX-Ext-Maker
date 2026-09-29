@@ -2,6 +2,14 @@
 
 All notable changes to NuModeX Ext Maker are documented here.
 
+## [2.11.0] - 2026-09-29
+
+### Added
+- Claude Sonnet 5.5 (Anthropic).
+
+### Changed
+- Raised the chat token budget from 8,192 to 32,000 across all three cloud providers. Recent models think or reason before answering and those tokens come out of the same budget as the reply, so a long answer had little room left. Image-attachment chat turns share this budget.
+
 ## [2.10.0] - 2026-09-24
 
 ### Added
